@@ -1,0 +1,6 @@
+.progress-bar > .bar{
+    -fx-accent: #4CAF50;
+    -fx-background-color: #4CAF50;
+    -fx-border-color: #000000;
+    -fx-border-radius: 5px;
+}
