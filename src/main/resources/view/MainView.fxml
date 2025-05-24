@@ -53,11 +53,11 @@
          <children>
             <TableView fx:id="tabelaProcessos" layoutX="1.0" layoutY="23.0" prefHeight="244.0" prefWidth="399.0">
               <columns>
-                  <TableColumn prefWidth="75.0" text="Nome" />
-                  <TableColumn prefWidth="75.0" text="PID" />
-                  <TableColumn prefWidth="75.0" text="User" />
-                  <TableColumn prefWidth="75.0" text="CPU %" />
-                  <TableColumn prefWidth="75.0" text="Memoria %" />
+                  <TableColumn fx:id="colunaNome" prefWidth="75.0" text="Nome" />
+                  <TableColumn fx:id="colunaPid" prefWidth="75.0" text="PID" />
+                  <TableColumn fx:id="colunaUser" prefWidth="75.0" text="User" />
+                  <TableColumn fx:id="colunaCpu" prefWidth="75.0" text="CPU %" />
+                  <TableColumn fx:id="colunaMemoria" prefWidth="75.0" text="Memoria %" />
               </columns>
             </TableView>
             <ButtonBar layoutX="-1.0" layoutY="264.0" prefHeight="40.0" prefWidth="401.0">
