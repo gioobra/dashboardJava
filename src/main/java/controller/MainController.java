@@ -1,51 +1,48 @@
 package controller;
 
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.util.Duration;
 import model.CpuMonitor;
 import model.CPU;
 import javafx.scene.chart.XYChart;
 import model.Processes;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 
 public class MainController {
-    @FXML
-    private ProgressBar barraUsoCPU;
-    @FXML
-    private Label valorCPU;
-    @FXML
-    private ProgressBar barraUsoMemoria;
-    @FXML
-    private Label valorMemoria;
-    @FXML
-    private Label valorNProcessos;
-    @FXML
-    private Label valorThreads;
-    @FXML
-    private ListView<String> CPUinfo;
-    @FXML
-    private TableView<Object> tabelaProcessos;
-    @FXML
-    private Button detalhes;
-    @FXML
-    private LineChart<Number, Number> graficoCPU;
-    @FXML
-    private PieChart graficoRAM;
-    /*
-    @FXML private TableColumn<Integer, Integer> colunaNome;
-    @FXML private TableColumn<String, String> colunaPID;
-    @FXML private TableColumn<String, String> colunaUser;
-    @FXML private TableColumn<Double, Double> colunaCpuPercent;
-    @FXML private TableColumn<Double, Double> colunaMemoriaPercent;
-     */
+    @FXML private ProgressBar barraUsoCPU;
+    @FXML private Label valorCPU;
+    @FXML private ProgressBar barraUsoMemoria;
+    @FXML private Label valorMemoria;
+    @FXML private Label valorNProcessos;
+    @FXML private Label valorThreads;
+    @FXML private ListView<String> CPUinfo;
+    @FXML private TableView<Map<String, Object>> tabelaProcessos;
+    @FXML private Button detalhes;
+    @FXML private LineChart<Number, Number> graficoCPU;
+    @FXML private PieChart graficoRAM;
+    @FXML private TableColumn<Map<String, Object>, String> colunaNome;
+    @FXML private TableColumn<Map<String, Object>, String> colunaPid;
+    @FXML private TableColumn<Map<String, Object>, String> colunaUser;
+    @FXML private TableColumn<Map<String, Object>, Number> colunaCpu;
+    @FXML private TableColumn<Map<String, Object>, Number> colunaMemoria;
+
 
     private CpuMonitor cpuMonitor;
     //private CPU cpu;
@@ -53,7 +50,7 @@ public class MainController {
     private XYChart.Series<Number, Number> valoresCPUIdle;
     private int tempo = 0;
     private static final int MAX_PONTOS_GRAFICO_CPU = 60;
-    //private Processes process;
+    private Processes processes;
     private ScheduledService<SystemDataSnapshot> updateService;
 
     private static class SystemDataSnapshot {
@@ -61,17 +58,17 @@ public class MainController {
         double cpuIdle;
         long numProcesses;
         long numThreads;
+        ObservableList<Map<String, Object>> processList;
     }
 
     @FXML
     private void initialize() {
         this.cpuMonitor = new CpuMonitor("/proc/cpuinfo", "/proc/stat", "/proc", "/etc/passwd");
-        double usoCpuInicial = this.cpuMonitor.getCpuUsage(0);
-        //this.process = new Processes();
+        this.processes = new Processes();
 
         setupStaticInfo();
         setupCpuChart();
-        //setupProcessTableColumns();
+        setupProcessTableColumns();
 
         iniciarAtualizacoesPeriodicas();
     }
@@ -96,13 +93,26 @@ public class MainController {
         graficoCPU.getYAxis().setLabel("Uso/Idle (%)");
     }
 
-    /*private void setupProcessTableColumns() {
-        colunaPid.setCellValueFactory(new PropertyValueFactory<>("pid"));
-        colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
-        colunaCpuPercent.setCellValueFactory(new PropertyValueFactory<>("cpuPercent"));
-        colunaMemoriaPercent.setCellValueFactory(new PropertyValueFactory<>("memoriaPercent"));
+    private void setupProcessTableColumns() {
+        colunaNome.setCellValueFactory(cellData ->
+                new SimpleStringProperty((String) cellData.getValue().get("nome"))
+        );
+        colunaPid.setCellValueFactory(cellData ->
+                new SimpleStringProperty((String) cellData.getValue().get("pid"))
+        );
+        colunaUser.setCellValueFactory(cellData ->
+                new SimpleStringProperty((String) cellData.getValue().get("user"))
+        );
+        colunaCpu.setCellValueFactory(cellData -> {
+            Object cpuValue = cellData.getValue().get("cpu");
+            return new SimpleDoubleProperty(cpuValue != null ? ((Number) cpuValue).doubleValue() : 0.0);
+        });
+        colunaMemoria.setCellValueFactory(cellData -> {
+            Object memValue = cellData.getValue().get("memoria");
+            return new SimpleDoubleProperty(memValue != null ? ((Number) memValue).doubleValue() : 0.0);
+        });
     }
-     */
+
     private void iniciarAtualizacoesPeriodicas() {
         updateService = new ScheduledService<SystemDataSnapshot>() {
             @Override
@@ -118,6 +128,26 @@ public class MainController {
 
                         snapshot.numProcesses = cpuMonitor.getTotalProcesses();
                         snapshot.numThreads = cpuMonitor.getTotalThreads();
+
+                        ObservableList<Map<String, Object>> processDataList = FXCollections.observableArrayList();
+                        List<Path> todosOsCaminhosDeProcessos = processes.getAllProcessesPath();
+                        for (Path caminhoDoProcesso : todosOsCaminhosDeProcessos) {
+                            Map<String, Object> rowData = new HashMap<>();
+                            try {
+                                String pid = processes.getProcessID(caminhoDoProcesso);
+                                rowData.put("nome", processes.getProcessName(caminhoDoProcesso));
+                                rowData.put("pid", pid);
+                                rowData.put("user", processes.getProcessUser(caminhoDoProcesso.toString()));
+                                double cpuProc = processes.getProcessCpuUsage(caminhoDoProcesso);
+                                rowData.put("cpu", cpuProc);
+                                double memProc = processes.getProcessMemoryPercentage(caminhoDoProcesso);
+                                rowData.put("memoria", memProc);
+                                processDataList.add(rowData);
+                            } catch (Exception e) {
+                                System.err.println("Task.call() - Erro ao processar " + caminhoDoProcesso.getFileName() + ": " + e.getMessage());
+                            }
+                        }
+                        snapshot.processList = processDataList;
 
                         return snapshot;
                     }
@@ -148,9 +178,12 @@ public class MainController {
 
             valorMemoria.setText("Memoria: - % (Não implementado)");
 
-
-            System.out.println("Atualização da UI: População da tabela de processos ainda pendente no CpuMonitor.");
-
+            if(snapshot.processList != null){
+                tabelaProcessos.setItems(snapshot.processList);
+            }
+            else{
+                tabelaProcessos.setItems(FXCollections.emptyObservableList());
+            }
             this.tempo++;
 
         });
@@ -158,8 +191,9 @@ public class MainController {
         // O que fazer se a Task falhar (roda na Thread do JavaFX)
         updateService.setOnFailed(event -> {
             System.err.println("Erro ao atualizar dados do sistema:");
-            updateService.getException().printStackTrace();
-            // Você pode querer mostrar uma mensagem de erro na UI aqui
+            if(updateService.getException() != null) {
+                updateService.getException().printStackTrace();
+            }
         });
 
         updateService.start(); // Inicia o serviço
