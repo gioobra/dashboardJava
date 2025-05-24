@@ -15,9 +15,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.CpuMonitor;
+import model.CPU;
 import java.io.IOException;
 import javafx.collections.FXCollections;
 import javafx.scene.chart.XYChart;
+import model.Processes;
 
 public class MainController {
     @FXML private ProgressBar barraUsoCPU;
@@ -39,14 +41,17 @@ public class MainController {
      */
 
     private CpuMonitor cpuMonitor;
+    private CPU cpu;
     private XYChart.Series<Number, Number> valoresCPU;
     private int tempo = 0;
     private static final int MAX_PONTOS_GRAFICO_CPU= 60;
+    private Processes process;
 
     @FXML
     private void initialize() {
         this.cpuMonitor = new CpuMonitor("/proc/cpuinfo", "/proc/stat", "/proc", "/etc/passwd");
         double usoCpuInicial = this.cpuMonitor.getCpuUsage(0);
+        this.process = new Processes();
 
         barraUsoCPU.setProgress(usoCpuInicial / 100.0);
         valorCPU.setText(String.format("CPU: %.2f %%", usoCpuInicial));
@@ -54,8 +59,8 @@ public class MainController {
         barraUsoMemoria.setProgress(); // mudar quando tiver
         valorMemoria.setText("Memoria: - %");
 
-        valorNProcessos.setText("Número de Processos: " + this.cpuMonitor.getTotalProcesses());
-        valorThreads.setText("Threads: " + this.cpuMonitor.getTotalThreads());
+        valorNProcessos.setText("Número de Processos: " + this.process.getTotalProcesses());
+        valorThreads.setText("Threads: " + this.process.getTotalThreads());
 
         valoresCPU = new XYChart.Series<>();
         valoresCPU.setName("Uso CPU (%)");
@@ -64,8 +69,11 @@ public class MainController {
         graficoCPU.getXAxis().setLabel("Tempo (s)");
         graficoCPU.getYAxis().setLabel("Uso (%)");
 
-        CPUinfo.getItems().add("CPU:" + this.cpuMonitor.getCpuName());
-        CPUinfo.getItems().add("Cores:" + this.cpuMonitor.getNumberOfCores());
+        CPUinfo.getItems().add("CPU: " + this.cpu.getCpuName());
+        CPUinfo.getItems().add("Cores: " + this.cpu.getNumberOfCores());
+        CPUinfo.getItems().add("Uso CPU: " + this.cpu.getCpuInUse() + "%");
+        CPUinfo.getItems().add(("CPU em idle: ") + this.cpu.getCpuInIdle() + "%");
+
         /*
         colunaPid.setCellValueFactory(new PropertyValueFactory<>("pid"));
         colunaNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
@@ -82,8 +90,9 @@ public class MainController {
         }
     }
 
-    @FXML
+    /*@FXML
     private void detalhes() {
 
     }
+     */
 }
