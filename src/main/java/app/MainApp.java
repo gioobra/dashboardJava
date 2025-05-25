@@ -10,7 +10,12 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class MainApp extends Application {
+
     private MainController mainController;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage){
@@ -32,12 +37,10 @@ public class MainApp extends Application {
                     mainController.shutdown();
                 }
             });
+
             primaryStage.show();
-        } catch (IOException e){
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-    }
-    public static void main(String[] args) {
-        launch(args);
     }
 }

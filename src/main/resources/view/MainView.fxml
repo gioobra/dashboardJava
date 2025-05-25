@@ -16,7 +16,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.geometry.Insets?>
@@ -61,8 +60,8 @@
                   <TableColumn fx:id="colunaNome" prefWidth="200.0" text="Nome" />
                   <TableColumn fx:id="colunaPid" prefWidth="100.0" text="PID" />
                   <TableColumn fx:id="colunaUser" prefWidth="150.0" text="User" />
-                  <TableColumn fx:id="colunaCpu" prefWidth="100.0" text="CPU %" />
-                  <TableColumn fx:id="colunaMemoria" prefWidth="120.0" text="Memoria %" />
+                  <TableColumn fx:id="colunaCpu" prefWidth="108.0" text="\%CPU" />
+                  <TableColumn fx:id="colunaMemoria" prefWidth="108.0" text="\%MEM" />
               </columns>
             </TableView>
             <ButtonBar AnchorPane.rightAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.bottomAnchor="5.0" prefHeight="40.0">
@@ -102,18 +101,11 @@
                      <PieChart fx:id="graficoRAM" prefHeight="180.0" prefWidth="280.0" maxHeight="180.0" maxWidth="280.0"/>
                  </children>
              </StackPane>
-             <AnchorPane styleClass="dashboard-panel" GridPane.rowIndex="2">
+             <StackPane styleClass="dashboard-panel" GridPane.rowIndex="2">
                  <children>
-                     <LineChart fx:id="graficoSwap" animated="false" AnchorPane.topAnchor="30.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.leftAnchor="5.0">
-                         <xAxis>
-                             <NumberAxis fx:id="swapXAxis" label="Tempo (s)" side="BOTTOM" />
-                         </xAxis>
-                         <yAxis>
-                             <NumberAxis fx:id="swapYAxis" autoRanging="false" label="Uso Swap(%)" side="LEFT" upperBound="100.0" />
-                         </yAxis>
-                     </LineChart>
+                     <PieChart fx:id="graficoSwap" prefHeight="180.0" prefWidth="280.0" maxHeight="180.0" maxWidth="280.0"/>
                  </children>
-             </AnchorPane>
+             </StackPane>
          </children>
       </GridPane>
    </right>

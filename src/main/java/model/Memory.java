@@ -1,4 +1,5 @@
 package model;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,23 +13,6 @@ public class Memory {
 
     public Memory () {
 
-    }
-
-    public static void main(String[] args) {
-        Memory memory = new Memory();
-        System.out.println("Total Memory: " + memory.getTotalMemory() + " GB");
-        System.out.println("Free Memory: " + memory.getFreeMemory() + " GB");
-        System.out.println("Used Memory: " + memory.getMemUsed() + " GB");
-
-        System.out.println("Buffers: " + memory.getBuffers() + " KB");
-        System.out.println("Cached: " + memory.getCache() + " MB");
-
-        System.out.println("Total Swap Memory: " + memory.getTotalSwapMemory() + " GB");
-        System.out.println("Free Swap Memory: " + memory.getFreeSwapMemory() + " GB");
-        System.out.println("Used Swap Memory: " + memory.getSwapUsed() + " GB");
-
-        System.out.println("Memory Usage Percentage: " + memory.getMemUsedPercentage() + " %");
-        System.out.println("Swap Usage Percentage: " + memory.getSwapUsedPercentage() + " %");
     }
 
     public double getTotalMemory() {
@@ -54,7 +38,7 @@ public class Memory {
 
         try (Stream<String> memory = Files.lines(PROC_MEMINFO)) {
             freeMemory = memory
-                    .filter(content -> content.startsWith("MemFree:"))
+                    .filter(content -> content.startsWith("MemAvailable:"))
                     .findFirst();
         } catch (IOException e) {
             throw new RuntimeException(e);
