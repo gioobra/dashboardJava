@@ -25,11 +25,13 @@ public class MainApp extends Application {
 
             mainController = loader.getController();
 
-            Scene scene = new Scene(root, 800, 600);
+            Scene scene = new Scene(root, 1280, 720);
+
+            String cssPath = getClass().getResource("/view/styles.css").toExternalForm();
+            scene.getStylesheets().add(cssPath);
 
             primaryStage.setTitle("Task Manager Dashboard");
             primaryStage.setScene(scene);
-
             primaryStage.setOnCloseRequest(event -> {
                 if (mainController != null) {
                     mainController.shutdown();

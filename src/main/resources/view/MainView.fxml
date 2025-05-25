@@ -19,74 +19,75 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.layout.StackPane?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<?import javafx.geometry.Insets?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" styleClass="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <bottom>
-      <GridPane prefHeight="114.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+      <GridPane prefHeight="160.0" BorderPane.alignment="CENTER" hgap="10">
+          <padding><Insets top="10" right="10" bottom="10" left="10"/> </padding>
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0"/>
+          <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0"/>
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0"  vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <VBox prefHeight="200.0" prefWidth="100.0">
+            <VBox styleClass="dashboard-panel" alignment="CENTER_LEFT" spacing="5" GridPane.columnIndex="0">
+                <padding><Insets left="10" top="5" bottom="5" right="10"/> </padding>
                <children>
-                  <ProgressBar fx:id="barraUsoCPU" prefWidth="200.0" progress="0.2" stylesheets="@styles.css" />
-                  <Label fx:id="valorCPU" text="CPU: " />
-                  <ProgressBar fx:id="barraUsoMemoria" prefWidth="200.0" progress="0.4" stylesheets="@styles.css" />
-                  <Label fx:id="valorMemoria" text="Memoria:" />
-                  <Label fx:id="valorNProcessos" text="Numero de Processos:" />
-                  <Label fx:id="valorThreads" text="Threads:" />
+                  <ProgressBar fx:id="barraUsoCPU" maxWidth="Infinity"  />
+                  <Label fx:id="valorCPU" styleClass="label" text="CPU: " />
+                  <ProgressBar fx:id="barraUsoMemoria" maxWidth="Infinity" />
+                  <Label fx:id="valorMemoria" styleClass="label" text="Memoria:" />
+                  <Label fx:id="valorNProcessos" styleClass="label" text="Numero de Processos:" />
+                  <Label fx:id="valorThreads" styleClass="label" text="Threads:" />
                </children>
             </VBox>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+            <AnchorPane styleClass="dashboard-panel" GridPane.columnIndex="1">
                <children>
-                  <Label layoutY="6.0" text="Informações da CPU:" />
-                  <ListView fx:id="CPUinfo" editable="true" layoutX="2.0" layoutY="22.0" prefHeight="91.0" prefWidth="296.0" />
+                  <Label layoutX="10.0" layoutY="6.0" styleClass="section-title" text="Informações da CPU:" />
+                  <ListView fx:id="CPUinfo" editable="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.topAnchor="30.0" styleClass="list-view" />
                </children>
             </AnchorPane>
          </children>
       </GridPane>
    </bottom>
    <center>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <AnchorPane styleClass="dashboard-panel" BorderPane.alignment="CENTER">
          <children>
-            <TableView fx:id="tabelaProcessos" layoutX="1.0" layoutY="23.0" prefHeight="244.0" prefWidth="399.0">
+             <Label layoutX="10.0" layoutY="10.0" styleClass="section-title" text="Processos"> </Label>
+            <TableView fx:id="tabelaProcessos" AnchorPane.topAnchor="40.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
               <columns>
-                  <TableColumn fx:id="colunaNome" prefWidth="75.0" text="Nome" />
-                  <TableColumn fx:id="colunaPid" prefWidth="75.0" text="PID" />
-                  <TableColumn fx:id="colunaUser" prefWidth="75.0" text="User" />
-                  <TableColumn fx:id="colunaCpu" prefWidth="75.0" text="CPU %" />
-                  <TableColumn fx:id="colunaMemoria" prefWidth="75.0" text="Memoria %" />
+                  <TableColumn fx:id="colunaNome" prefWidth="200.0" text="Nome" />
+                  <TableColumn fx:id="colunaPid" prefWidth="100.0" text="PID" />
+                  <TableColumn fx:id="colunaUser" prefWidth="150.0" text="User" />
+                  <TableColumn fx:id="colunaCpu" prefWidth="100.0" text="CPU %" />
+                  <TableColumn fx:id="colunaMemoria" prefWidth="120.0" text="Memoria %" />
               </columns>
             </TableView>
-            <ButtonBar layoutX="-1.0" layoutY="264.0" prefHeight="40.0" prefWidth="401.0">
+            <ButtonBar AnchorPane.rightAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.bottomAnchor="5.0" prefHeight="40.0">
               <buttons>
-                <Button fx:id="detalhes" mnemonicParsing="false" text="Detalhes" onAction="#handleDetalhesButtonAction" />
+                <Button fx:id="detalhes" mnemonicParsing="false" onAction="#handleDetalhesButtonAction" styleClass="button" text="Detalhes" />
               </buttons>
             </ButtonBar>
-            <Label layoutX="130.0" layoutY="2.0" text="Processos">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Label>
          </children>
       </AnchorPane>
    </center>
    <right>
-      <GridPane prefHeight="286.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <GridPane prefHeight="350.0" hgap="10" vgap="10" BorderPane.alignment="CENTER">
+          <padding><Insets top="5" right="10" bottom="5" left="5"/> </padding>
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="ALWAYS" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="220.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="220.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="220.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+            <AnchorPane styleClass="dashboard-panel" GridPane.rowIndex="0">
                <children>
-                  <LineChart fx:id="graficoCPU" layoutX="-16.0" layoutY="38.0" prefHeight="161.0" prefWidth="216.0">
+                  <LineChart fx:id="graficoCPU" animated="false" AnchorPane.topAnchor="30.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
                       <xAxis>
                           <NumberAxis label="Tempo (s)" />
                       </xAxis>
@@ -94,16 +95,23 @@
                           <NumberAxis label="Uso (%)" upperBound="100" />
                       </yAxis>
                   </LineChart>
-                  <Label layoutX="78.0" layoutY="30.0" text="Uso CPU">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
                </children>
             </AnchorPane>
-             <AnchorPane prefHeight="250.0" prefWidth="300.0" GridPane.rowIndex="1">
+             <StackPane styleClass="dashboard-panel" GridPane.rowIndex="1">
                  <children>
-                     <PieChart fx:id="graficoRAM" layoutX="10.0" layoutY="20.0" prefHeight="180.0" prefWidth="245.0" />
+                     <PieChart fx:id="graficoRAM" prefHeight="180.0" prefWidth="280.0" maxHeight="180.0" maxWidth="280.0"/>
+                 </children>
+             </StackPane>
+             <AnchorPane styleClass="dashboard-panel" GridPane.rowIndex="2">
+                 <children>
+                     <LineChart fx:id="graficoSwap" animated="false" AnchorPane.topAnchor="30.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.leftAnchor="5.0">
+                         <xAxis>
+                             <NumberAxis fx:id="swapXAxis" label="Tempo (s)" side="BOTTOM" />
+                         </xAxis>
+                         <yAxis>
+                             <NumberAxis fx:id="swapYAxis" autoRanging="false" label="Uso Swap(%)" side="LEFT" upperBound="100.0" />
+                         </yAxis>
+                     </LineChart>
                  </children>
              </AnchorPane>
          </children>

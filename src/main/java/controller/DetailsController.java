@@ -154,7 +154,7 @@ public class DetailsController {
             if (taskCarregarDados.getException() != null) {
                 taskCarregarDados.getException().printStackTrace();
             }
-            // Mostrar um Alert para o usuário seria bom aqui
+
 
         });
 
