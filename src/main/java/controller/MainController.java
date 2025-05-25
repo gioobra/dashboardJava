@@ -19,6 +19,7 @@ import model.CpuMonitor;
 import model.Memory;
 import model.CPU;
 import javafx.scene.chart.XYChart;
+import model.Process;
 import model.Processes;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -178,21 +179,23 @@ public class MainController {
                         snapshot.memoryTotalGB = memory.getTotalMemory();
 
                         ObservableList<Map<String, Object>> processDataList = FXCollections.observableArrayList();
-                        List<Path> todosOsCaminhosDeProcessos = processes.getAllProcessesPath();
-                        for (Path caminhoDoProcesso : todosOsCaminhosDeProcessos) {
+
+                        List<Process> todosOsProcessos = processes.getAllProcesses();
+                        for (Process process : todosOsProcessos) {
                             Map<String, Object> rowData = new HashMap<>();
                             try {
-                                String pid = processes.getProcessID(caminhoDoProcesso);
-                                rowData.put("nome", processes.getProcessName(caminhoDoProcesso));
+                                String pid = process.getProcessID();
+                                System.out.println(pid);
+                                rowData.put("nome", process.getProcessName());
                                 rowData.put("pid", pid);
-                                rowData.put("user", processes.getProcessUser(caminhoDoProcesso.toString()));
-                                double cpuProc = processes.getProcessCpuUsage(caminhoDoProcesso);
+                                rowData.put("user", process.getProcessUser());
+                                double cpuProc = process.getProcessCpuUsage();
                                 rowData.put("cpu", cpuProc);
-                                double memProc = processes.getProcessMemoryPercentage(caminhoDoProcesso);
+                                double memProc = process.getProcessMemoryPercentage();
                                 rowData.put("memoria", memProc);
                                 processDataList.add(rowData);
                             } catch (Exception e) {
-                                System.err.println("Task.call() - Erro ao processar " + caminhoDoProcesso.getFileName() + ": " + e.getMessage());
+                                System.err.println("Task.call() - Erro ao processar " + process.getBasePath().getFileName() + ": " + e.getMessage());
                             }
                         }
                         snapshot.processList = processDataList;
