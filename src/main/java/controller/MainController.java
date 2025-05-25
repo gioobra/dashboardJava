@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
 public class MainController {
     @FXML
     private ProgressBar barraUsoCPU;
@@ -68,7 +67,6 @@ public class MainController {
     @FXML
     private TableColumn<Map<String, Object>, Number> colunaMemoria;
 
-
     private CpuMonitor cpuMonitor;
     private Processes processes;
     private Memory memory;
@@ -94,7 +92,6 @@ public class MainController {
     @FXML
     private void initialize() {
         this.cpuMonitor = new CpuMonitor("/proc/cpuinfo", "/proc/stat", "/proc", "/etc/passwd");
-        this.processes = new Processes();
         this.memory = new Memory();
 
         setupStaticInfo();
@@ -180,12 +177,13 @@ public class MainController {
 
                         ObservableList<Map<String, Object>> processDataList = FXCollections.observableArrayList();
 
+                        processes = new Processes();
+
                         List<Process> todosOsProcessos = processes.getAllProcesses();
                         for (Process process : todosOsProcessos) {
                             Map<String, Object> rowData = new HashMap<>();
                             try {
                                 String pid = process.getProcessID();
-                                System.out.println(pid);
                                 rowData.put("nome", process.getProcessName());
                                 rowData.put("pid", pid);
                                 rowData.put("user", process.getProcessUser());
