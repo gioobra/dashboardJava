@@ -5,11 +5,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.geometry.Side;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.util.Duration;
 import model.CpuMonitor;
+import model.Memory;
 import model.CPU;
 import javafx.scene.chart.XYChart;
 import model.Processes;
@@ -45,12 +47,13 @@ public class MainController {
 
 
     private CpuMonitor cpuMonitor;
+    private Processes processes;
+    private Memory memory;
     //private CPU cpu;
     private XYChart.Series<Number, Number> valoresCPU;
     private XYChart.Series<Number, Number> valoresCPUIdle;
     private int tempo = 0;
     private static final int MAX_PONTOS_GRAFICO_CPU = 60;
-    private Processes processes;
     private ScheduledService<SystemDataSnapshot> updateService;
 
     private static class SystemDataSnapshot {
@@ -58,6 +61,10 @@ public class MainController {
         double cpuIdle;
         long numProcesses;
         long numThreads;
+        double memoryUsedPercent;
+        double memoryUsedGB;
+        double memoryFreeGB;
+        double memoryTotalGB;
         ObservableList<Map<String, Object>> processList;
     }
 
@@ -65,12 +72,25 @@ public class MainController {
     private void initialize() {
         this.cpuMonitor = new CpuMonitor("/proc/cpuinfo", "/proc/stat", "/proc", "/etc/passwd");
         this.processes = new Processes();
+        this.memory = new Memory();
 
         setupStaticInfo();
         setupCpuChart();
         setupProcessTableColumns();
+        setupMemoryPieChart();
 
         iniciarAtualizacoesPeriodicas();
+    }
+    private void setupMemoryPieChart(){
+        graficoRAM.setTitle("Uso de RAM");
+        graficoRAM.setLegendVisible(true);
+        graficoRAM.setLabelsVisible(true);
+        graficoRAM.setLegendSide(Side.TOP);
+        graficoRAM.setAnimated(false);
+        ObservableList<PieChart.Data> initialData = FXCollections.observableArrayList(
+                new PieChart.Data("Carregando...", 1)
+        );
+        graficoRAM.setData(initialData);
     }
 
     private void setupStaticInfo() {
@@ -129,6 +149,11 @@ public class MainController {
                         snapshot.numProcesses = cpuMonitor.getTotalProcesses();
                         snapshot.numThreads = cpuMonitor.getTotalThreads();
 
+                        snapshot.memoryUsedPercent = memory.getMemUsedPercentage();
+                        snapshot.memoryUsedGB = memory.getMemUsed();
+                        snapshot.memoryFreeGB = memory.getFreeMemory();
+                        snapshot.memoryTotalGB = memory.getTotalMemory();
+
                         ObservableList<Map<String, Object>> processDataList = FXCollections.observableArrayList();
                         List<Path> todosOsCaminhosDeProcessos = processes.getAllProcessesPath();
                         for (Path caminhoDoProcesso : todosOsCaminhosDeProcessos) {
@@ -175,8 +200,14 @@ public class MainController {
             valorNProcessos.setText(String.format("Número de Processos: %d", snapshot.numProcesses));
             valorThreads.setText(String.format("Threads: %d", snapshot.numThreads));
 
+            barraUsoMemoria.setProgress(snapshot.memoryUsedPercent / 100.0);
+            valorMemoria.setText(String.format("Memoria: %.2f %%", snapshot.memoryUsedPercent));
 
-            valorMemoria.setText("Memoria: - % (Não implementado)");
+            ObservableList<PieChart.Data> ramPieChartData = FXCollections.observableArrayList(
+                    new PieChart.Data(String.format("Usada: %.2f GB", snapshot.memoryUsedGB), snapshot.memoryUsedGB),
+                    new PieChart.Data(String.format("Livre: %.2f GB", snapshot.memoryFreeGB), snapshot.memoryFreeGB)
+            );
+            graficoRAM.setData(ramPieChartData);
 
             if(snapshot.processList != null){
                 tabelaProcessos.setItems(snapshot.processList);
