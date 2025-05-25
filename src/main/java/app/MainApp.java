@@ -20,7 +20,7 @@ public class MainApp extends Application {
 
             mainController = loader.getController();
 
-            Scene scene = new Scene(root, 1280, 768);
+            Scene scene = new Scene(root, 800, 600);
 
             primaryStage.setTitle("Task Manager");
             primaryStage.setScene(scene);
