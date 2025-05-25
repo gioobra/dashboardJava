@@ -63,7 +63,7 @@
             </TableView>
             <ButtonBar layoutX="-1.0" layoutY="264.0" prefHeight="40.0" prefWidth="401.0">
               <buttons>
-                <Button fx:id="detalhes" mnemonicParsing="false" text="Detalhes" />
+                <Button fx:id="detalhes" mnemonicParsing="false" text="Detalhes" onAction="#handleDetalhesButtonAction" />
               </buttons>
             </ButtonBar>
             <Label layoutX="130.0" layoutY="2.0" text="Processos">

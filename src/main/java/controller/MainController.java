@@ -5,11 +5,16 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+import controller.DetailsController;
 import model.CpuMonitor;
 import model.Memory;
 import model.CPU;
@@ -18,6 +23,7 @@ import model.Processes;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -28,22 +34,38 @@ import java.util.Map;
 
 
 public class MainController {
-    @FXML private ProgressBar barraUsoCPU;
-    @FXML private Label valorCPU;
-    @FXML private ProgressBar barraUsoMemoria;
-    @FXML private Label valorMemoria;
-    @FXML private Label valorNProcessos;
-    @FXML private Label valorThreads;
-    @FXML private ListView<String> CPUinfo;
-    @FXML private TableView<Map<String, Object>> tabelaProcessos;
-    @FXML private Button detalhes;
-    @FXML private LineChart<Number, Number> graficoCPU;
-    @FXML private PieChart graficoRAM;
-    @FXML private TableColumn<Map<String, Object>, String> colunaNome;
-    @FXML private TableColumn<Map<String, Object>, String> colunaPid;
-    @FXML private TableColumn<Map<String, Object>, String> colunaUser;
-    @FXML private TableColumn<Map<String, Object>, Number> colunaCpu;
-    @FXML private TableColumn<Map<String, Object>, Number> colunaMemoria;
+    @FXML
+    private ProgressBar barraUsoCPU;
+    @FXML
+    private Label valorCPU;
+    @FXML
+    private ProgressBar barraUsoMemoria;
+    @FXML
+    private Label valorMemoria;
+    @FXML
+    private Label valorNProcessos;
+    @FXML
+    private Label valorThreads;
+    @FXML
+    private ListView<String> CPUinfo;
+    @FXML
+    private TableView<Map<String, Object>> tabelaProcessos;
+    @FXML
+    private Button detalhes;
+    @FXML
+    private LineChart<Number, Number> graficoCPU;
+    @FXML
+    private PieChart graficoRAM;
+    @FXML
+    private TableColumn<Map<String, Object>, String> colunaNome;
+    @FXML
+    private TableColumn<Map<String, Object>, String> colunaPid;
+    @FXML
+    private TableColumn<Map<String, Object>, String> colunaUser;
+    @FXML
+    private TableColumn<Map<String, Object>, Number> colunaCpu;
+    @FXML
+    private TableColumn<Map<String, Object>, Number> colunaMemoria;
 
 
     private CpuMonitor cpuMonitor;
@@ -81,7 +103,8 @@ public class MainController {
 
         iniciarAtualizacoesPeriodicas();
     }
-    private void setupMemoryPieChart(){
+
+    private void setupMemoryPieChart() {
         graficoRAM.setTitle("Uso de RAM");
         graficoRAM.setLegendVisible(true);
         graficoRAM.setLabelsVisible(true);
@@ -187,7 +210,7 @@ public class MainController {
         updateService.setOnSucceeded(event -> {
             SystemDataSnapshot snapshot = updateService.getValue(); // Pega os dados coletados
 
-            long tempoNoGrafico = (long)this.tempo * 5;
+            long tempoNoGrafico = (long) this.tempo * 5;
 
             // Atualizar barra e label de CPU
             barraUsoCPU.setProgress(snapshot.cpuUsage / 100.0);
@@ -209,10 +232,9 @@ public class MainController {
             );
             graficoRAM.setData(ramPieChartData);
 
-            if(snapshot.processList != null){
+            if (snapshot.processList != null) {
                 tabelaProcessos.setItems(snapshot.processList);
-            }
-            else{
+            } else {
                 tabelaProcessos.setItems(FXCollections.emptyObservableList());
             }
             this.tempo++;
@@ -222,7 +244,7 @@ public class MainController {
         // O que fazer se a Task falhar (roda na Thread do JavaFX)
         updateService.setOnFailed(event -> {
             System.err.println("Erro ao atualizar dados do sistema:");
-            if(updateService.getException() != null) {
+            if (updateService.getException() != null) {
                 updateService.getException().printStackTrace();
             }
         });
@@ -245,8 +267,7 @@ public class MainController {
             if (valoresCPU.getData().size() > MAX_PONTOS_GRAFICO_CPU) {
                 valoresCPU.getData().remove(0);
             }
-        }
-        else{
+        } else {
             System.err.println("A série 'valoresCPU' para o gráfico de CPU não foi inicializada!");
         }
 
@@ -255,15 +276,31 @@ public class MainController {
             if (valoresCPUIdle.getData().size() > MAX_PONTOS_GRAFICO_CPU) {
                 valoresCPUIdle.getData().remove(0);
             }
-        }
-        else{
+        } else {
             System.err.println("A série 'valoresCPUIdle' não foi inicializada!");
         }
     }
-}
-    /*@FXML
-    private void detalhes() {
 
+    @FXML
+    private void handleDetalhesButtonAction() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/DetailsView.fxml"));
+            Parent root = loader.load();
+
+            Stage detalhesStage = new Stage();
+            detalhesStage.setTitle("Detalhes Avançados dos Processos");
+            detalhesStage.setScene(new Scene(root));
+
+            detalhesStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace(); // Log do erro
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro ao Abrir Detalhes");
+            alert.setHeaderText(null);
+            alert.setContentText("Não foi possível carregar a janela de detalhes avançados.\nVerifique o console para mais informações.");
+            alert.showAndWait();
+        }
     }
-     */
-//}
+}
+
