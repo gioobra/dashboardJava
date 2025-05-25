@@ -34,38 +34,23 @@ import java.util.Locale;
 import java.util.Map;
 
 public class MainController {
-    @FXML
-    private ProgressBar barraUsoCPU;
-    @FXML
-    private Label valorCPU;
-    @FXML
-    private ProgressBar barraUsoMemoria;
-    @FXML
-    private Label valorMemoria;
-    @FXML
-    private Label valorNProcessos;
-    @FXML
-    private Label valorThreads;
-    @FXML
-    private ListView<String> CPUinfo;
-    @FXML
-    private TableView<Map<String, Object>> tabelaProcessos;
-    @FXML
-    private Button detalhes;
-    @FXML
-    private LineChart<Number, Number> graficoCPU;
-    @FXML
-    private PieChart graficoRAM;
-    @FXML
-    private TableColumn<Map<String, Object>, String> colunaNome;
-    @FXML
-    private TableColumn<Map<String, Object>, String> colunaPid;
-    @FXML
-    private TableColumn<Map<String, Object>, String> colunaUser;
-    @FXML
-    private TableColumn<Map<String, Object>, Number> colunaCpu;
-    @FXML
-    private TableColumn<Map<String, Object>, Number> colunaMemoria;
+    @FXML private ProgressBar barraUsoCPU;
+    @FXML private Label valorCPU;
+    @FXML private ProgressBar barraUsoMemoria;
+    @FXML private Label valorMemoria;
+    @FXML private Label valorNProcessos;
+    @FXML private Label valorThreads;
+    @FXML private ListView<String> CPUinfo;
+    @FXML private TableView<Map<String, Object>> tabelaProcessos;
+    @FXML private Button detalhes;
+    @FXML private LineChart<Number, Number> graficoCPU;
+    @FXML private PieChart graficoRAM;
+    @FXML private TableColumn<Map<String, Object>, String> colunaNome;
+    @FXML private TableColumn<Map<String, Object>, String> colunaPid;
+    @FXML private TableColumn<Map<String, Object>, String> colunaUser;
+    @FXML private TableColumn<Map<String, Object>, Number> colunaCpu;
+    @FXML private TableColumn<Map<String, Object>, Number> colunaMemoria;
+    @FXML private LineChart<Number, Number> graficoSwap;
 
     private CpuMonitor cpuMonitor;
     private Processes processes;
@@ -76,6 +61,7 @@ public class MainController {
     private int tempo = 0;
     private static final int MAX_PONTOS_GRAFICO_CPU = 60;
     private ScheduledService<SystemDataSnapshot> updateService;
+    private XYChart.Series<Number, Number> valoresSwap;
 
     private static class SystemDataSnapshot {
         double cpuUsage;
@@ -86,6 +72,7 @@ public class MainController {
         double memoryUsedGB;
         double memoryFreeGB;
         double memoryTotalGB;
+        double swapUsagePercent;
         ObservableList<Map<String, Object>> processList;
     }
 
@@ -98,8 +85,16 @@ public class MainController {
         setupCpuChart();
         setupProcessTableColumns();
         setupMemoryPieChart();
+        setupSwapChart();
 
         iniciarAtualizacoesPeriodicas();
+    }
+
+    private void setupSwapChart() {
+        valoresSwap = new XYChart.Series<>();
+        valoresSwap.setName("Uso Swap (%)");
+        graficoSwap.getData().add(valoresSwap);
+
     }
 
     private void setupMemoryPieChart() {
@@ -175,6 +170,8 @@ public class MainController {
                         snapshot.memoryFreeGB = memory.getFreeMemory();
                         snapshot.memoryTotalGB = memory.getTotalMemory();
 
+                        snapshot.swapUsagePercent = memory.getSwapUsedPercentage();
+
                         ObservableList<Map<String, Object>> processDataList = FXCollections.observableArrayList();
 
                         processes = new Processes();
@@ -232,7 +229,7 @@ public class MainController {
                     new PieChart.Data(String.format("Livre: %.2f GB", snapshot.memoryFreeGB), snapshot.memoryFreeGB)
             );
             graficoRAM.setData(ramPieChartData);
-
+            adicionarPontoGraficoSwap(tempoNoGrafico, snapshot.swapUsagePercent);
             if (snapshot.processList != null) {
                 tabelaProcessos.setItems(snapshot.processList);
             } else {
@@ -260,6 +257,18 @@ public class MainController {
         }
     }
 
+    private void adicionarPontoGraficoSwap(long XValue, double usoSwap){
+        if(valoresSwap != null){
+            valoresSwap.getData().add(new XYChart.Data<>(XValue, usoSwap));
+
+            if(valoresSwap.getData().size() > MAX_PONTOS_GRAFICO_CPU){
+                valoresSwap.getData().remove(0);
+            }
+            else{
+                System.err.println("A série 'valoresSwap' para o gráfico de SWAP não foi inicializada!");
+            }
+        }
+    }
 
     private void adicionarPontoGraficoCPU(long xValue, double usoCPU, double idleCPU) {
         if (valoresCPU != null) {

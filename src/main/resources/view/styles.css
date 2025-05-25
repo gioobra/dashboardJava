@@ -1,6 +1,176 @@
+.progress-bar{
+    -fx-pref-height: 12px;
+}
 .progress-bar > .bar{
-    -fx-accent: #4CAF50;
-    -fx-background-color: #4CAF50;
-    -fx-border-color: #000000;
+    -fx-background-color: linear-gradient(to right, #007bff, #00bfff);
+    -fx-background-insets: 1px;
+    -fx-background-radius: 3px;
+    -fx-padding: 4px;
+}
+.progress-bar > .track{
+    -fx-background-color: #404050;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4px;
+}
+.root{
+    -fx-background-color: #1e1e2f;
+    -fx-font-family: "DejaVu Sans", Arial, sans-serif;
+}
+
+.label{
+    -fx-text-fill: #c0c0d0;
+    -fx-font-size: 1em;
+}
+
+.section-title{
+    -fx-text-fill: #e0e0f0;
+    -fx-font-size: 1.4em;
+    -fx-font-weight: bold;
+}
+
+.dashboard-panel{
+    -fx-background-color: #2a2a3a;
+    -fx-padding: 15px;
+    -fx-border-color: #404050;
+    -fx-border-width: 1px;
     -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+.button{
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 3px;
+    -fx-padding: 5px 15px;
+}
+.button:hover{
+    -fx-background-color: #0056b3;
+}
+.button:pressed {
+    -fx-background-color: #004085;
+}
+.list-view {
+    -fx-background-color: #2a2a3a;
+    -fx-border-color: #404050;
+}
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c0c0d0;
+    -fx-padding: 5px;
+}
+.list-cell:filled:selected, .list-cell:filled:selected:focused {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+}
+.list-cell:filled:hover {
+    -fx-background-color: #3a3a4a;
+}
+.table-view {
+    -fx-background-color: #2a2a3a;
+    -fx-border-color: #404050;
+    -fx-text-fill: #c0c0d0;
+}
+.table-view .column-header-background {
+    -fx-background-color: #333343;
+}
+.table-view .column-header-background .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+.table-view .table-cell {
+    -fx-text-fill: #c0c0d0;
+    -fx-border-color: transparent;
+    -fx-padding: 5px;
+}
+.table-view .table-row-cell {
+    -fx-background-color: #2a2a3a;
+}
+.table-view .table-row-cell:odd {
+    -fx-background-color: #252535;
+}
+.table-view .table-row-cell:selected {
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+}
+.table-view .table-row-cell:selected .table-cell {
+    -fx-text-fill: white;
+}
+.table-view .scroll-bar:horizontal .track,
+.table-view .scroll-bar:vertical .track {
+    -fx-background-color: #2a2a3a;
+    -fx-border-color: #404050;
+    -fx-background-radius: 0em;
+}
+.table-view .scroll-bar .thumb {
+    -fx-background-color: #505060;
+    -fx-background-radius: 0.5em;
+}
+/* Fundo geral do gráfico e da área de plotagem */
+.chart {
+    -fx-background-color: transparent; /* Se estiver dentro de um painel já estilizado */
+    -fx-padding: 5px;
+}
+.chart-plot-background {
+    -fx-background-color: #252535; /* Fundo da área onde as linhas/pizza são desenhadas */
+}
+.chart-title {
+    -fx-text-fill: #e0e0f0;
+    -fx-font-size: 1.1em;
+}
+
+/* Eixos */
+.axis {
+    -fx-tick-label-fill: #a0a0b0; /* Cor dos números nos eixos */
+    -fx-tick-length: 5;
+    -fx-border-color: #404050; /* Cor da linha do eixo */
+}
+.axis .axis-label { /* Label do eixo (ex: "Tempo (s)") */
+    -fx-text-fill: #b0b0c0;
+}
+
+/* Linhas de grade */
+.chart-vertical-grid-lines,
+.chart-horizontal-grid-lines {
+    -fx-stroke: #404050; /* Cor das linhas de grade */
+    -fx-stroke-dash-array: 2 2; /* Linhas tracejadas (opcional) */
+}
+
+/* Legenda do Gráfico */
+.chart-legend {
+    -fx-background-color: #2a2a3a;
+    -fx-text-fill: #c0c0d0;
+    -fx-padding: 5px;
+    -fx-border-color: #404050;
+}
+.chart-legend-item {
+    -fx-text-fill: #c0c0d0;
+}
+
+.default-color0.chart-series-line { -fx-stroke: #00aeff; }
+.default-color1.chart-series-line { -fx-stroke: #28a745; }
+.default-color2.chart-series-line { -fx-stroke: #ffc107; }
+
+
+.default-color0.chart-line-symbol { -fx-background-color: #00aeff, white; }
+.default-color1.chart-line-symbol { -fx-background-color: #28a745, white; }
+.default-color2.chart-line-symbol { -fx-background-color: #ffc107, white; }
+
+
+.default-color0.chart-series-area-fill { -fx-fill: rgba(0, 174, 255, 0.1); }
+.default-color1.chart-series-area-fill { -fx-fill: rgba(40, 167, 69, 0.1); }
+.default-color2.chart-series-area-fill { -fx-fill: rgba(255, 193, 7, 0.1); }
+
+
+
+.default-color0.chart-pie { -fx-pie-color: #00aeff; }
+.default-color1.chart-pie { -fx-pie-color: #28a745; }
+
+
+.chart-pie-label-line {
+    -fx-stroke: #808090;
+    -fx-fill: #808090;
+}
+.chart-pie-label {
+    -fx-fill: #c0c0d0;
+    -fx-font-size: 0.9em;
 }
