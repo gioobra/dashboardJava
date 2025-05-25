@@ -105,36 +105,36 @@ public class DetailsController {
             @Override
             protected ObservableList<Map<String, Object>> call() throws Exception {
                 ObservableList<Map<String, Object>> listaDetalhada = FXCollections.observableArrayList();
-                List<Path> todosOsCaminhos = processes.getAllProcessesPath();
 
-                for (Path caminho : todosOsCaminhos) {
+                List<model.Process> todosOsProcessos = processes.getAllProcesses();
+                for (model.Process process : todosOsProcessos) {
                     Map<String, Object> dadosLinha = new HashMap<>();
                     try {
-                        String pid = processes.getProcessID(caminho);
+                        String pid = process.getProcessID();
                         dadosLinha.put("pid", pid);
-                        dadosLinha.put("nome", processes.getProcessName(caminho));
-                        dadosLinha.put("user", processes.getProcessUser(caminho.toString()));
-                        dadosLinha.put("ppid", processes.getParentProcessID(caminho));
-                        dadosLinha.put("threads", processes.getProcessNumberOfThreads(caminho.toString()));
-                        dadosLinha.put("state", processes.getProcessState(caminho));
-                        dadosLinha.put("priority", processes.getProcessPriority(caminho));
-                        dadosLinha.put("niceValue", processes.getProcessNiceValue(caminho));
-                        dadosLinha.put("vmAllocated", processes.getProcessVirtualMemoryAllocated(caminho));
-                        dadosLinha.put("vmPeak", processes.getProcessVirtualMemoryPeak(caminho));
-                        dadosLinha.put("physMemory", processes.getProcessPhysicalMemoryUsage(caminho));
-                        dadosLinha.put("execCodePages", processes.getProcessExecCodePages(caminho));
-                        dadosLinha.put("libCodePages", processes.getProcessLibCodePages(caminho));
-                        dadosLinha.put("heapPages", processes.getProcessHeapPages(caminho));
-                        dadosLinha.put("stackPages", processes.getProcessStackPages(caminho));
-                        dadosLinha.put("ramPercent", processes.getProcessMemoryPercentage(caminho));
+                        dadosLinha.put("nome", process.getProcessName());
+                        dadosLinha.put("user", process.getProcessUser());
+                        dadosLinha.put("ppid", process.getParentProcessID());
+                        dadosLinha.put("threads", process.getProcessNumberOfThreads());
+                        dadosLinha.put("state", process.getProcessState());
+                        dadosLinha.put("priority", process.getProcessPriority());
+                        dadosLinha.put("niceValue", process.getProcessNiceValue());
+                        dadosLinha.put("vmAllocated", process.getProcessVirtualMemoryAllocated());
+                        dadosLinha.put("vmPeak", process.getProcessVirtualMemoryPeak());
+                        dadosLinha.put("physMemory", process.getProcessPhysicalMemoryUsage());
+                        dadosLinha.put("execCodePages", process.getProcessExecCodePages());
+                        dadosLinha.put("libCodePages", process.getProcessLibCodePages());
+                        dadosLinha.put("heapPages", process.getProcessHeapPages());
+                        dadosLinha.put("stackPages", process.getProcessStackPages());
+                        dadosLinha.put("ramPercent", process.getProcessMemoryPercentage());
                         // AVISO DE PERFORMANCE: getProcessCpuUsage tem sleep de 1s!
-                        dadosLinha.put("cpuPercent", processes.getProcessCpuUsage(caminho));
-                        dadosLinha.put("commandLine", processes.getProcessCommandLine(caminho));
+                        dadosLinha.put("cpuPercent", process.getProcessCpuUsage());
+                        dadosLinha.put("commandLine", process.getProcessCommandLine());
 
                         listaDetalhada.add(dadosLinha);
                         // System.out.println("DetalhesTask: Adicionado PID " + pid); // Log para cada processo
                     } catch (Exception e) {
-                        System.err.println("DetalhesTask: Erro ao processar " + caminho.getFileName() + ": " + e.getMessage());
+                        System.err.println("DetalhesTask: Erro ao processar " + process.getBasePath().getFileName() + ": " + e.getMessage());
                         // e.printStackTrace(); // Para debug mais profundo
                     }
                 }
