@@ -119,6 +119,7 @@ public class MainController {
         valoresCPU = new XYChart.Series<>();
         valoresCPU.setName("Uso CPU (%)");
         graficoCPU.getData().add(valoresCPU);
+        graficoCPU.setTitle("Uso CPU");
 
         valoresCPUIdle = new XYChart.Series<>();
         valoresCPUIdle.setName("CPU Idle (%)");
@@ -299,7 +300,10 @@ public class MainController {
 
             Stage detalhesStage = new Stage();
             detalhesStage.setTitle("Detalhes Avançados dos Processos");
-            detalhesStage.setScene(new Scene(root));
+            Scene detalhesScene = new Scene(root);
+            String cssPath = getClass().getResource("/view/styles.css").toExternalForm();
+            detalhesScene.getStylesheets().add(cssPath);
+            detalhesStage.setScene(detalhesScene);
 
             detalhesStage.show();
 

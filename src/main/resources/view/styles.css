@@ -74,23 +74,20 @@
     -fx-background-color: #333343;
 }
 .table-view .column-header-background .label {
-    -fx-text-fill: white;
+    -fx-text-fill: #333343;
     -fx-font-weight: bold;
+    -fx-padding: 8px;
 }
 .table-view .table-cell {
-    -fx-text-fill: #c0c0d0;
+    -fx-text-fill: #f0f0f0;
     -fx-border-color: transparent;
-    -fx-padding: 5px;
+    -fx-padding: 6px 8px;
 }
 .table-view .table-row-cell {
-    -fx-background-color: #2a2a3a;
-}
-.table-view .table-row-cell:odd {
     -fx-background-color: #252535;
 }
 .table-view .table-row-cell:selected {
     -fx-background-color: #007bff;
-    -fx-text-fill: white;
 }
 .table-view .table-row-cell:selected .table-cell {
     -fx-text-fill: white;
@@ -105,37 +102,31 @@
     -fx-background-color: #505060;
     -fx-background-radius: 0.5em;
 }
-/* Fundo geral do gráfico e da área de plotagem */
 .chart {
-    -fx-background-color: transparent; /* Se estiver dentro de um painel já estilizado */
+    -fx-background-color: transparent;
     -fx-padding: 5px;
 }
 .chart-plot-background {
-    -fx-background-color: #252535; /* Fundo da área onde as linhas/pizza são desenhadas */
+    -fx-background-color: #252535;
 }
 .chart-title {
     -fx-text-fill: #e0e0f0;
     -fx-font-size: 1.1em;
 }
-
-/* Eixos */
 .axis {
-    -fx-tick-label-fill: #a0a0b0; /* Cor dos números nos eixos */
+    -fx-tick-label-fill: #a0a0b0;
     -fx-tick-length: 5;
-    -fx-border-color: #404050; /* Cor da linha do eixo */
+    -fx-border-color: #404050;
 }
-.axis .axis-label { /* Label do eixo (ex: "Tempo (s)") */
+.axis .axis-label {
     -fx-text-fill: #b0b0c0;
+    -fx-font-size: 0.7em;
 }
-
-/* Linhas de grade */
 .chart-vertical-grid-lines,
 .chart-horizontal-grid-lines {
-    -fx-stroke: #404050; /* Cor das linhas de grade */
-    -fx-stroke-dash-array: 2 2; /* Linhas tracejadas (opcional) */
+    -fx-stroke: #404050;
+    -fx-stroke-dash-array: 2 2;
 }
-
-/* Legenda do Gráfico */
 .chart-legend {
     -fx-background-color: #2a2a3a;
     -fx-text-fill: #c0c0d0;
