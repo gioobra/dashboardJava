@@ -21,14 +21,14 @@ import java.util.Map;
 
 public class DetailsController {
     @FXML private TableView<Map<String, Object>> tabelaDetalhesProcessos;
-    @FXML private TableColumn<Map<String, Object>, String> colPid;
-    @FXML private TableColumn<Map<String, Object>, String> colPpid;
+    @FXML private TableColumn<Map<String, Object>, Number> colPid;
+    @FXML private TableColumn<Map<String, Object>, Number> colPpid;
     @FXML private TableColumn<Map<String, Object>, String> colNome;
     @FXML private TableColumn<Map<String, Object>, String> colUser;
-    @FXML private TableColumn<Map<String, Object>, String> colThreads;
+    @FXML private TableColumn<Map<String, Object>, Number> colThreads;
     @FXML private TableColumn<Map<String, Object>, String> colState;
-    @FXML private TableColumn<Map<String, Object>, String> colPriority;
-    @FXML private TableColumn<Map<String, Object>, String> colNiceValue;
+    @FXML private TableColumn<Map<String, Object>, Number> colPriority;
+    @FXML private TableColumn<Map<String, Object>, Number> colNiceValue;
     @FXML private TableColumn<Map<String, Object>, String> colVmAllocated;
     @FXML private TableColumn<Map<String, Object>, Number> colVmPeak;
     @FXML private TableColumn<Map<String, Object>, String> colPhysMemory;
@@ -65,14 +65,14 @@ public class DetailsController {
         carregarDadosDetalhados();
     }
     private void setupColunasTabelaDetalhes() {
-        colPid.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("pid")));
-        colPpid.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("ppid")));
-        colNome.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("nome")));
+        colPid.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("pid") != null ? ((Number)cd.getValue().get("pid")).longValue() : 0L));
+        colPpid.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("ppid") != null ? ((Number)cd.getValue().get("ppid")).longValue() : 0L));
+        colNome.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("name")));
         colUser.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("user")));
-        colThreads.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("threads")));
+        colThreads.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("threads") != null ? ((Number)cd.getValue().get("threads")).longValue() : 0L));
         colState.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("state")));
-        colPriority.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("priority")));
-        colNiceValue.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("niceValue")));
+        colPriority.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("priority") != null ? ((Number)cd.getValue().get("priority")).longValue() : 0L));
+        colNiceValue.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("niceValue") != null ? ((Number)cd.getValue().get("niceValue")).longValue() : 0L));
         colVmAllocated.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("vmAllocated")));
         colVmPeak.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("vmPeak") != null ? ((Number)cd.getValue().get("vmPeak")).longValue() : 0L));
         colPhysMemory.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("physMemory")));
@@ -112,7 +112,7 @@ public class DetailsController {
                     try {
                         dadosLinha.put("pid", process.getProcessID());
                         dadosLinha.put("ppid", process.getParentProcessID());
-                        dadosLinha.put("nome", process.getProcessName());
+                        dadosLinha.put("name", process.getProcessName());
                         dadosLinha.put("user", process.getProcessUser());
                         dadosLinha.put("threads", process.getProcessNumberOfThreads());
                         dadosLinha.put("state", process.getProcessState());
@@ -126,15 +126,12 @@ public class DetailsController {
                         dadosLinha.put("heapPages", process.getProcessHeapPages());
                         dadosLinha.put("stackPages", process.getProcessStackPages());
                         dadosLinha.put("ramPercent", process.getProcessMemoryPercentage());
-                        // AVISO DE PERFORMANCE: getProcessCpuUsage tem sleep de 1s!
                         dadosLinha.put("cpuPercent", process.getProcessCpuUsage());
                         dadosLinha.put("commandLine", process.getProcessCommandLine());
 
                         listaDetalhada.add(dadosLinha);
-                        // System.out.println("DetalhesTask: Adicionado PID " + pid); // Log para cada processo
                     } catch (Exception e) {
-                        System.err.println("DetalhesTask: Erro ao processar " + process.getBasePath().getFileName() + ": " + e.getMessage());
-                        // e.printStackTrace(); // Para debug mais profundo
+                        throw new RuntimeException(e);
                     }
                 }
                 return listaDetalhada;
@@ -144,18 +141,14 @@ public class DetailsController {
             tabelaDetalhesProcessos.setItems(taskCarregarDados.getValue());
             loadingIndicator.setVisible(false);
             tabelaDetalhesProcessos.setDisable(false);
-            System.out.println("DetalhesUI: Tabela de detalhes carregada.");
         });
 
         taskCarregarDados.setOnFailed(event -> {
             loadingIndicator.setVisible(false);
             tabelaDetalhesProcessos.setDisable(false);
-            System.err.println("DetalhesUI: Falha ao carregar dados detalhados dos processos.");
             if (taskCarregarDados.getException() != null) {
                 taskCarregarDados.getException().printStackTrace();
             }
-
-
         });
 
         new Thread(taskCarregarDados).start();

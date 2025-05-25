@@ -30,7 +30,7 @@ public class MainApp extends Application {
             String cssPath = getClass().getResource("/view/styles.css").toExternalForm();
             scene.getStylesheets().add(cssPath);
 
-            primaryStage.setTitle("Task Manager Dashboard");
+            primaryStage.setTitle("Task Manager");
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(event -> {
                 if (mainController != null) {
