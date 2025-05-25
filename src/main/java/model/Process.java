@@ -69,7 +69,7 @@ public class Process {
         return uidInfo.getFirst().split(":")[0];
     }
 
-    public String getProcessID () {
+    public long getProcessID () {
         Optional<String> optionalProcessInfo;
 
         try (Stream<String> processInfo = Files.lines(BasePath.resolve("status"))) {
@@ -81,13 +81,13 @@ public class Process {
         }
 
         if(optionalProcessInfo.isPresent()) {
-            return optionalProcessInfo.get().split(":")[1].trim();
+            return Long.parseLong(optionalProcessInfo.get().split(":")[1].trim());
         } else {
-            return "NULL";
+            return 0;
         }
     }
 
-    public String getParentProcessID () {
+    public long getParentProcessID () {
         Optional<String> optionalProcessInfo;
 
         try (Stream<String> processInfo = Files.lines(BasePath.resolve("status"))) {
@@ -99,9 +99,9 @@ public class Process {
         }
 
         if(optionalProcessInfo.isPresent()) {
-            return optionalProcessInfo.get().split(":")[1].trim();
+            return Long.parseLong(optionalProcessInfo.get().split(":")[1].trim());
         } else {
-            return "NULL";
+            return 0;
         }
     }
 
@@ -122,7 +122,7 @@ public class Process {
         }
     }
 
-    public String getProcessNumberOfThreads() {
+    public long getProcessNumberOfThreads() {
         List<String> threadInfo = new ArrayList<>();
 
         try (Stream<String> readLines = Files.lines(BasePath.resolve("status"))) {
@@ -133,7 +133,7 @@ public class Process {
             throw new RuntimeException(e);
         }
 
-        return threadInfo.getFirst().split("\\s+")[1];
+        return Long.parseLong(threadInfo.getFirst().split("\\s+")[1]);
     }
 
     public String getProcessState() {
@@ -208,7 +208,7 @@ public class Process {
         }
     }
 
-    public String getProcessPriority() {
+    public long getProcessPriority() {
         Optional<String[]> optionalProcessInfo;
 
         try (Stream<String> processInfo = Files.lines(BasePath.resolve("stat"))) {
@@ -220,13 +220,13 @@ public class Process {
         }
 
         if(optionalProcessInfo.isPresent()) {
-            return optionalProcessInfo.get()[17];
+            return Long.parseLong(optionalProcessInfo.get()[17]);
         } else {
-            return "NULL";
+            return 0;
         }
     }
 
-    public String getProcessNiceValue() {
+    public long getProcessNiceValue() {
         Optional<String[]> optionalProcessInfo;
 
         try (Stream<String> processInfo = Files.lines(BasePath.resolve("stat"))) {
@@ -238,9 +238,9 @@ public class Process {
         }
 
         if(optionalProcessInfo.isPresent()) {
-            return optionalProcessInfo.get()[18];
+            return Long.parseLong(optionalProcessInfo.get()[18]);
         } else {
-            return "NULL";
+            return 0;
         }
     }
 

@@ -61,8 +61,8 @@
                   <TableColumn fx:id="colunaNome" prefWidth="200.0" text="Nome" />
                   <TableColumn fx:id="colunaPid" prefWidth="100.0" text="PID" />
                   <TableColumn fx:id="colunaUser" prefWidth="150.0" text="User" />
-                  <TableColumn fx:id="colunaCpu" prefWidth="100.0" text="CPU %" />
-                  <TableColumn fx:id="colunaMemoria" prefWidth="120.0" text="Memoria %" />
+                  <TableColumn fx:id="colunaCpu" prefWidth="108.0" text="\%CPU" />
+                  <TableColumn fx:id="colunaMemoria" prefWidth="108.0" text="\%MEM" />
               </columns>
             </TableView>
             <ButtonBar AnchorPane.rightAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.bottomAnchor="5.0" prefHeight="40.0">

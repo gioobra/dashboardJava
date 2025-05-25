@@ -1,6 +1,7 @@
 package controller;
 
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
@@ -25,6 +26,7 @@ import javafx.collections.ObservableList;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainController {
@@ -40,7 +42,7 @@ public class MainController {
     @FXML private LineChart<Number, Number> graficoCPU;
     @FXML private PieChart graficoRAM;
     @FXML private TableColumn<Map<String, Object>, String> colunaNome;
-    @FXML private TableColumn<Map<String, Object>, String> colunaPid;
+    @FXML private TableColumn<Map<String, Object>, Number> colunaPid;
     @FXML private TableColumn<Map<String, Object>, String> colunaUser;
     @FXML private TableColumn<Map<String, Object>, Number> colunaCpu;
     @FXML private TableColumn<Map<String, Object>, Number> colunaMemoria;
@@ -66,6 +68,9 @@ public class MainController {
         double memoryFreeGB;
         double memoryTotalGB;
         double swapUsagePercent;
+        double swapUsedGB;
+        double swapFreeGB;
+        double swapTotalGB;
         ObservableList<Map<String, Object>> processList;
     }
 
@@ -116,9 +121,10 @@ public class MainController {
         colunaNome.setCellValueFactory(cellData ->
                 new SimpleStringProperty((String) cellData.getValue().get("nome"))
         );
-        colunaPid.setCellValueFactory(cellData ->
-                new SimpleStringProperty((String) cellData.getValue().get("pid"))
-        );
+        colunaPid.setCellValueFactory(cellData -> {
+            Object pidValue = cellData.getValue().get("pid");
+            return new SimpleLongProperty(pidValue != null ? ((Number) pidValue).longValue() : 0);
+        });
         colunaUser.setCellValueFactory(cellData ->
                 new SimpleStringProperty((String) cellData.getValue().get("user"))
         );
@@ -133,7 +139,7 @@ public class MainController {
     }
 
     private void setupMemoryPieChart() {
-        graficoRAM.setTitle("Uso de RAM");
+        graficoRAM.setTitle("Uso de RAM (" + String.format("%.2f", memory.getTotalMemory()) + "GB)");
         graficoRAM.setLegendVisible(true);
         graficoRAM.setLabelsVisible(true);
         graficoRAM.setLegendSide(Side.TOP);
@@ -166,6 +172,9 @@ public class MainController {
                         snapshot.memoryTotalGB = memory.getTotalMemory();
 
                         snapshot.swapUsagePercent = memory.getSwapUsedPercentage();
+                        snapshot.swapUsedGB = memory.getSwapUsed();
+                        snapshot.swapFreeGB = memory.getFreeSwapMemory();
+                        snapshot.swapTotalGB = memory.getTotalSwapMemory();
 
                         ObservableList<Map<String, Object>> processDataList = FXCollections.observableArrayList();
 
@@ -175,17 +184,16 @@ public class MainController {
                         for (Process process : todosOsProcessos) {
                             Map<String, Object> rowData = new HashMap<>();
                             try {
-                                String pid = process.getProcessID();
                                 rowData.put("nome", process.getProcessName());
-                                rowData.put("pid", pid);
+                                rowData.put("pid", process.getProcessID());
                                 rowData.put("user", process.getProcessUser());
-                                double cpuProc = process.getProcessCpuUsage();
-                                rowData.put("cpu", cpuProc);
-                                double memProc = process.getProcessMemoryPercentage();
-                                rowData.put("memoria", memProc);
+                                String cpuProc = String.format(Locale.US, "%.2f", process.getProcessCpuUsage());
+                                rowData.put("cpu", Double.parseDouble(cpuProc));
+                                String memProc = String.format(Locale.US,"%.2f", process.getProcessMemoryPercentage());
+                                rowData.put("memoria", Double.parseDouble(memProc));
                                 processDataList.add(rowData);
                             } catch (Exception e) {
-                                System.err.println("Task.call() - Erro ao processar " + process.getBasePath().getFileName() + ": " + e.getMessage());
+                                throw new RuntimeException(e);
                             }
                         }
                         snapshot.processList = processDataList;
@@ -224,7 +232,9 @@ public class MainController {
                     new PieChart.Data(String.format("Livre: %.2f GB", snapshot.memoryFreeGB), snapshot.memoryFreeGB)
             );
             graficoRAM.setData(ramPieChartData);
+
             adicionarPontoGraficoSwap(tempoNoGrafico, snapshot.swapUsagePercent);
+
             if (snapshot.processList != null) {
                 tabelaProcessos.setItems(snapshot.processList);
             } else {
@@ -258,9 +268,6 @@ public class MainController {
 
             if(valoresSwap.getData().size() > MAX_PONTOS_GRAFICO_CPU){
                 valoresSwap.getData().remove(0);
-            }
-            else{
-                System.err.println("A série 'valoresSwap' para o gráfico de SWAP não foi inicializada!");
             }
         }
     }

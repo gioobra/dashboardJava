@@ -12,20 +12,20 @@
                 <TableColumn fx:id="colPpid" prefWidth="70.0" text="PPid"/>
                 <TableColumn fx:id="colNome" prefWidth="150.0" text="Name"/>
                 <TableColumn fx:id="colUser" prefWidth="100.0" text="User"/>
-                <TableColumn fx:id="colThreads" prefWidth="70.0" text="Threads" />
+                <TableColumn fx:id="colThreads" prefWidth="100.0" text="Threads" />
                 <TableColumn fx:id="colState" prefWidth="100.0" text="State"/>
-                <TableColumn fx:id="colPriority" prefWidth="70.0" text="Priority"/>
-                <TableColumn fx:id="colNiceValue" prefWidth="75.0" text="Nice Value"/>
-                <TableColumn fx:id="colVmAllocated" prefWidth="150.0" text="Virt Mem Alloc (KB)"/>
-                <TableColumn fx:id="colVmPeak" prefWidth="150.0" text="Virt Mem Peak (KB)"/>
-                <TableColumn fx:id="colPhysMemory" prefWidth="150.0" text="Phys Mem Usage (KB)"/>
+                <TableColumn fx:id="colPriority" prefWidth="85.0" text="Priority"/>
+                <TableColumn fx:id="colNiceValue" prefWidth="110.0" text="Nice Value"/>
+                <TableColumn fx:id="colVmAllocated" prefWidth="175.0" text="Virt Mem Alloc (KB)"/>
+                <TableColumn fx:id="colVmPeak" prefWidth="175.0" text="Virt Mem Peak (KB)"/>
+                <TableColumn fx:id="colPhysMemory" prefWidth="200.0" text="Phys Mem Usage (KB)"/>
                 <TableColumn fx:id="colExecCodePages" prefWidth="150.0" text="Exec Code (KB)"/>
                 <TableColumn fx:id="colLibCodePages" prefWidth="150.0" text="Lib Code (KB)"/>
                 <TableColumn fx:id="colHeapPages" prefWidth="150.0" text="Heap (KB)"/>
                 <TableColumn fx:id="colStackPages" prefWidth="150.0" text="Stack (KB)"/>
                 <TableColumn fx:id="colRamPercent" prefWidth="100.0" text="\%MEM"/>
                 <TableColumn fx:id="colCpuPercent" prefWidth="100.0" text="\%CPU"/>
-                <TableColumn fx:id="colCommandLine" prefWidth="300.0" text="Command Line" />
+                <TableColumn fx:id="colCommandLine" prefWidth="1000.0" text="Command Line" />
             </columns>
         </TableView>
     </children>
