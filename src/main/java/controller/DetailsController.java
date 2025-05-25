@@ -13,9 +13,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import model.Processes;
 
-import java.nio.file.Path;
+import model.Processes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,9 +22,9 @@ import java.util.Map;
 public class DetailsController {
     @FXML private TableView<Map<String, Object>> tabelaDetalhesProcessos;
     @FXML private TableColumn<Map<String, Object>, String> colPid;
+    @FXML private TableColumn<Map<String, Object>, String> colPpid;
     @FXML private TableColumn<Map<String, Object>, String> colNome;
     @FXML private TableColumn<Map<String, Object>, String> colUser;
-    @FXML private TableColumn<Map<String, Object>, String> colPpid;
     @FXML private TableColumn<Map<String, Object>, String> colThreads;
     @FXML private TableColumn<Map<String, Object>, String> colState;
     @FXML private TableColumn<Map<String, Object>, String> colPriority;
@@ -43,6 +42,7 @@ public class DetailsController {
 
     private Processes processes;
     private ProgressIndicator loadingIndicator;
+
     @FXML
     private void initialize() {
         this.processes = new Processes();
@@ -66,9 +66,9 @@ public class DetailsController {
     }
     private void setupColunasTabelaDetalhes() {
         colPid.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("pid")));
+        colPpid.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("ppid")));
         colNome.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("nome")));
         colUser.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("user")));
-        colPpid.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("ppid")));
         colThreads.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("threads")));
         colState.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("state")));
         colPriority.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("priority")));
@@ -110,11 +110,10 @@ public class DetailsController {
                 for (model.Process process : todosOsProcessos) {
                     Map<String, Object> dadosLinha = new HashMap<>();
                     try {
-                        String pid = process.getProcessID();
-                        dadosLinha.put("pid", pid);
+                        dadosLinha.put("pid", process.getProcessID());
+                        dadosLinha.put("ppid", process.getParentProcessID());
                         dadosLinha.put("nome", process.getProcessName());
                         dadosLinha.put("user", process.getProcessUser());
-                        dadosLinha.put("ppid", process.getParentProcessID());
                         dadosLinha.put("threads", process.getProcessNumberOfThreads());
                         dadosLinha.put("state", process.getProcessState());
                         dadosLinha.put("priority", process.getProcessPriority());
