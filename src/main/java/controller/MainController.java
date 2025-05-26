@@ -91,7 +91,8 @@ public class MainController {
 
     private void setupSwapChart() {
         valoresSwap = new XYChart.Series<>();
-        valoresSwap.setName("Uso Swap (%)");
+        valoresSwap.setName("Swap (%)");
+        graficoSwap.setTitle("Uso Swap (" + String.format("%.2f", memory.getTotalSwapMemory()) + "GB)");
         graficoSwap.getData().add(valoresSwap);
 
     }

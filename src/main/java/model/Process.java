@@ -168,7 +168,7 @@ public class Process {
         if(optionalProcessInfo.isPresent()) {
             return optionalProcessInfo.get().split("\\s+")[1].trim();
         } else {
-            return "NULL";
+            return "0";
         }
     }
 
@@ -204,7 +204,7 @@ public class Process {
         if(optionalProcessInfo.isPresent()) {
             return optionalProcessInfo.get().split("\\s+")[1].trim();
         } else {
-            return "NULL";
+            return "0";
         }
     }
 
@@ -257,7 +257,7 @@ public class Process {
         if(optionalProcessInfo.isPresent()) {
             return optionalProcessInfo.get().trim();
         } else {
-            return "NULL";
+            return "0";
         }
     }
 
