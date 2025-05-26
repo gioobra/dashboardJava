@@ -54,7 +54,7 @@ public class MainController {
     private XYChart.Series<Number, Number> valoresCPU;
     private XYChart.Series<Number, Number> valoresCPUIdle;
     private int tempo = 0;
-    private static final int MAX_PONTOS_GRAFICO_CPU = 60;
+    private static final int MAX_PONTOS_GRAFICO_CPU = 600;
     private ScheduledService<SystemDataSnapshot> updateService;
     private XYChart.Series<Number, Number> valoresSwap;
 
@@ -66,11 +66,7 @@ public class MainController {
         double memoryUsedPercent;
         double memoryUsedGB;
         double memoryFreeGB;
-        double memoryTotalGB;
         double swapUsagePercent;
-        double swapUsedGB;
-        double swapFreeGB;
-        double swapTotalGB;
         ObservableList<Map<String, Object>> processList;
     }
 
@@ -89,26 +85,22 @@ public class MainController {
         iniciarAtualizacoesPeriodicas();
     }
 
-    private void setupSwapChart() {
-        valoresSwap = new XYChart.Series<>();
-        valoresSwap.setName("Swap (%)");
-        graficoSwap.setTitle("Uso Swap (" + String.format("%.2f", memory.getTotalSwapMemory()) + "GB)");
-        graficoSwap.getData().add(valoresSwap);
-
-    }
-
+    /* Metodo para colocar as info da CPU */
     private void setupStaticInfo() {
         CPUinfo.getItems().clear();
         CPUinfo.getItems().add("CPU: " + this.cpu.getCpuName());
         CPUinfo.getItems().add("Cores: " + this.cpu.getNumberOfCores());
     }
 
+    /* Metodo para configurar o grafico da CPU */
     private void setupCpuChart() {
+        // Essas primeiras linhas sao para o grafico de uso
         valoresCPU = new XYChart.Series<>();
         valoresCPU.setName("Uso CPU (%)");
         graficoCPU.getData().add(valoresCPU);
         graficoCPU.setTitle("Uso CPU");
 
+        // Essas sao para o grafico de idle
         valoresCPUIdle = new XYChart.Series<>();
         valoresCPUIdle.setName("CPU Idle (%)");
         graficoCPU.getData().add(valoresCPUIdle);
@@ -118,6 +110,8 @@ public class MainController {
         graficoCPU.getYAxis().setLabel("Uso/Idle (%)");
     }
 
+    /* Metodo para fazer a tabela de processos, cada cellData pega o Map da linha atual,
+    entao pega o elemento especifico (nome, pid, etc...) e testa se eh diferente de null */
     private void setupProcessTableColumns() {
         colunaNome.setCellValueFactory(cellData ->
                 new SimpleStringProperty((String) cellData.getValue().get("nome"))
@@ -139,6 +133,7 @@ public class MainController {
         });
     }
 
+    /* Metodo para fazer o grafico pizza de memoria */
     private void setupMemoryPieChart() {
         graficoRAM.setTitle("Uso de RAM (" + String.format("%.2f", memory.getTotalMemory()) + "GB)");
         graficoRAM.setLegendVisible(true);
@@ -146,20 +141,29 @@ public class MainController {
         graficoRAM.setLegendSide(Side.TOP);
         graficoRAM.setAnimated(false);
         ObservableList<PieChart.Data> initialData = FXCollections.observableArrayList(
-                new PieChart.Data("Carregando...", 1)
+                new PieChart.Data("Carregando...", 1) // Faz um placeholder antes dos dados reais
         );
         graficoRAM.setData(initialData);
     }
 
+    /* Metodo para fazer o grafico da memoria swap */
+    private void setupSwapChart() {
+        valoresSwap = new XYChart.Series<>();
+        valoresSwap.setName("Swap (%)");
+        graficoSwap.setTitle("Uso Swap (" + String.format("%.2f", memory.getTotalSwapMemory()) + "GB)");
+        graficoSwap.getData().add(valoresSwap);
+    }
+
+    /* Metodo para colocar os processos em paralelos/thread, cria uma instancia de ScheduledService */
     private void iniciarAtualizacoesPeriodicas() {
         updateService = new ScheduledService<SystemDataSnapshot>() {
             @Override
-            protected Task<SystemDataSnapshot> createTask() {
+            protected Task<SystemDataSnapshot> createTask() { // Task que vai ser executada repetidamente em uma thread
                 return new Task<>() {
                     @Override
                     protected SystemDataSnapshot call() throws Exception {
 
-                        SystemDataSnapshot snapshot = new SystemDataSnapshot();
+                        SystemDataSnapshot snapshot = new SystemDataSnapshot(); // Objeto que guarda todos os dados
 
                         snapshot.cpuUsage = cpu.getCpuInUse();
                         snapshot.cpuIdle = cpu.getCpuInIdle();
@@ -170,20 +174,17 @@ public class MainController {
                         snapshot.memoryUsedPercent = memory.getMemUsedPercentage();
                         snapshot.memoryUsedGB = memory.getMemUsed();
                         snapshot.memoryFreeGB = memory.getFreeMemory();
-                        snapshot.memoryTotalGB = memory.getTotalMemory();
 
                         snapshot.swapUsagePercent = memory.getSwapUsedPercentage();
-                        snapshot.swapUsedGB = memory.getSwapUsed();
-                        snapshot.swapFreeGB = memory.getFreeSwapMemory();
-                        snapshot.swapTotalGB = memory.getTotalSwapMemory();
 
+                        // Prepara a lista para os dados detalhados dos processos
                         ObservableList<Map<String, Object>> processDataList = FXCollections.observableArrayList();
 
                         processes = new Processes();
                         List<Process> todosOsProcessos = processes.getAllProcesses();
 
                         for (Process process : todosOsProcessos) {
-                            Map<String, Object> rowData = new HashMap<>();
+                            Map<String, Object> rowData = new HashMap<>(); // Hashmap que vai guardar os valores
                             try {
                                 rowData.put("nome", process.getProcessName());
                                 rowData.put("pid", process.getProcessID());
@@ -194,11 +195,10 @@ public class MainController {
                                 rowData.put("memoria", Double.parseDouble(memProc));
                                 processDataList.add(rowData);
                             } catch (Exception e) {
-                                throw new RuntimeException(e);
+                                throw new RuntimeException(e); // Lanca uma excecao se uma task der errado
                             }
                         }
                         snapshot.processList = processDataList;
-
                         return snapshot;
                     }
                 };
@@ -206,36 +206,40 @@ public class MainController {
         };
 
         updateService.setPeriod(Duration.seconds(5)); // Atualizar a cada 5 segundos
-        updateService.setRestartOnFailure(true);
+        updateService.setRestartOnFailure(true); // Reinicia se falha alguma task
 
-
+        // Define a acao a ser executada no JavaFX apos a task ser concluida
         updateService.setOnSucceeded(event -> {
             SystemDataSnapshot snapshot = updateService.getValue(); // Pega os dados coletados
 
-            long tempoNoGrafico = (long) this.tempo * 5;
+            long tempoNoGrafico = (long) this.tempo * 5; // Atualiza a barra e label de CPU
 
-            // Atualizar barra e label de CPU
+            // Atualiza a barra e label de CPU
             barraUsoCPU.setProgress(snapshot.cpuUsage / 100.0);
             valorCPU.setText(String.format("CPU: %.2f %%", snapshot.cpuUsage));
 
-            // Atualizar gráfico de CPU
+            // Atualiza o gráfico de CPU
             adicionarPontoGraficoCPU(tempoNoGrafico, snapshot.cpuUsage, snapshot.cpuIdle);
 
-            // Atualizar labels de processos e threads
+            // Atualiza labels de processos e threads
             valorNProcessos.setText(String.format("Número de Processos: %d", snapshot.numProcesses));
             valorThreads.setText(String.format("Threads: %d", snapshot.numThreads));
 
+            // Atualiza a barra e label de memoria
             barraUsoMemoria.setProgress(snapshot.memoryUsedPercent / 100.0);
             valorMemoria.setText(String.format("Memoria: %.2f %%", snapshot.memoryUsedPercent));
 
+            // Prepara e atualiza os dados do grafico pizza de RAM
             ObservableList<PieChart.Data> ramPieChartData = FXCollections.observableArrayList(
                     new PieChart.Data(String.format("Usada: %.2f GB", snapshot.memoryUsedGB), snapshot.memoryUsedGB),
                     new PieChart.Data(String.format("Livre: %.2f GB", snapshot.memoryFreeGB), snapshot.memoryFreeGB)
             );
             graficoRAM.setData(ramPieChartData);
 
+            // Atualiza o gráfico do Swap
             adicionarPontoGraficoSwap(tempoNoGrafico, snapshot.swapUsagePercent);
 
+            // Checa se os dados nao sao nulos
             if (snapshot.processList != null) {
                 tabelaProcessos.setItems(snapshot.processList);
             } else {
@@ -256,13 +260,14 @@ public class MainController {
         updateService.start(); // Inicia o serviço
     }
 
+    // Metodo para desligar tudo apos fechar o programa
     public void shutdown() {
         if (updateService != null) {
             updateService.cancel();
-            System.out.println("Serviço de atualização parado.");
         }
     }
 
+    // Metodo para validar os dados adquiridos e colocalos no grafico de Swap
     private void adicionarPontoGraficoSwap(long XValue, double usoSwap){
         if(valoresSwap != null){
             valoresSwap.getData().add(new XYChart.Data<>(XValue, usoSwap));
@@ -273,6 +278,7 @@ public class MainController {
         }
     }
 
+    // Metodo para validar os dados adquiridos e colocalos no grafico de CPU
     private void adicionarPontoGraficoCPU(long xValue, double usoCPU, double idleCPU) {
         if (valoresCPU != null) {
             valoresCPU.getData().add(new XYChart.Data<>(xValue, usoCPU));
@@ -294,6 +300,7 @@ public class MainController {
         }
     }
 
+    // Metodo para fazer surgir uma nova pagina ao apertar o botao detalhes
     @FXML
     private void handleDetalhesButtonAction() {
         try {
@@ -302,7 +309,7 @@ public class MainController {
 
             Stage detalhesStage = new Stage();
             detalhesStage.setTitle("Detalhes Avançados dos Processos");
-            Scene detalhesScene = new Scene(root);
+            Scene detalhesScene = new Scene(root, 1160, 600);
             String cssPath = getClass().getResource("/view/styles.css").toExternalForm();
             detalhesScene.getStylesheets().add(cssPath);
             detalhesStage.setScene(detalhesScene);
@@ -319,4 +326,3 @@ public class MainController {
         }
     }
 }
-

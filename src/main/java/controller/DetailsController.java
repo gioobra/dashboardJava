@@ -43,15 +43,18 @@ public class DetailsController {
     private Processes processes;
     private ProgressIndicator loadingIndicator;
 
+    // Cria e configura o modelo de processos e a tabela
     @FXML
     private void initialize() {
         this.processes = new Processes();
         setupColunasTabelaDetalhes();
 
+        // Cria e configura o indicador de progresso de carregamento
         loadingIndicator = new ProgressIndicator(-1.0);
         loadingIndicator.setMaxSize(100, 100);
         loadingIndicator.setVisible(false);
 
+        // Adiciona o indicador de carregamento
         if(tabelaDetalhesProcessos.getParent() instanceof AnchorPane){
             AnchorPane parentPane = (AnchorPane) tabelaDetalhesProcessos.getParent();
             StackPane indicatorPane = new StackPane(loadingIndicator);
@@ -64,6 +67,9 @@ public class DetailsController {
         }
         carregarDadosDetalhados();
     }
+    
+    /* Configura como vai ser pego o dado em cada coluna da tabela, cada objeto Map<String,
+    Object>(que representa uma linha) para popular as células da coluna correspondente */
     private void setupColunasTabelaDetalhes() {
         colPid.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("pid") != null ? ((Number)cd.getValue().get("pid")).longValue() : 0L));
         colPpid.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("ppid") != null ? ((Number)cd.getValue().get("ppid")).longValue() : 0L));
@@ -87,6 +93,8 @@ public class DetailsController {
         formatPercentColumn(colRamPercent);
         formatPercentColumn(colCpuPercent);
     }
+
+    // Formata para mostrar valores da coluna como porcentagem com duas casas decimais
     private void formatPercentColumn(TableColumn<Map<String, Object>, Number> column) {
         column.setCellFactory(tc -> new TableCell<>() {
             @Override
@@ -96,11 +104,14 @@ public class DetailsController {
             }
         });
     }
+
+    // Inicia a tarefa em background para carregar os dados de todos os processos, evitando que a UI congele
     private void carregarDadosDetalhados(){
         loadingIndicator.setVisible(true);
         tabelaDetalhesProcessos.setDisable(true); // Desabilita a tabela enquanto carrega
         tabelaDetalhesProcessos.setItems(FXCollections.emptyObservableList());
 
+        // Cria uma task para executar a coleta de dados em outra thread
         Task<ObservableList<Map<String, Object>>> taskCarregarDados = new Task<>() {
             @Override
             protected ObservableList<Map<String, Object>> call() throws Exception {
@@ -137,25 +148,24 @@ public class DetailsController {
                 return listaDetalhada;
             }
         };
+        
+        // Define o que fazer na thread da UI quando der certo
         taskCarregarDados.setOnSucceeded(event -> {
             tabelaDetalhesProcessos.setItems(taskCarregarDados.getValue());
             loadingIndicator.setVisible(false);
             tabelaDetalhesProcessos.setDisable(false);
         });
 
+        // Define o que fazer se nao der certo
         taskCarregarDados.setOnFailed(event -> {
             loadingIndicator.setVisible(false);
             tabelaDetalhesProcessos.setDisable(false);
-            System.err.println("DetalhesUI: Falha ao carregar dados detalhados dos processos.");
+
             if (taskCarregarDados.getException() != null) {
                 taskCarregarDados.getException().printStackTrace();
             }
-
-
         });
-
+        // Inicia a thread para nao bloquear a UI
         new Thread(taskCarregarDados).start();
     }
 }
-
-
