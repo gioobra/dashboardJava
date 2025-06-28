@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0"  xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DiscosController">
+    <top>
+        <TitledPane animated="false" text="Discos do Sistema" BorderPane.alignment="CENTER" styleClass="dashboard-panel">
+            <content>
+                <TableView fx:id="diskTableView" prefHeight="150.0">
+                    <columns>
+                        <TableColumn fx:id="partitionColumn" prefWidth="100.0" text="Partição" />
+                        <TableColumn fx:id="totalSpaceColumn" prefWidth="120.0" text="Tamanho Total" />
+                        <TableColumn fx:id="usedSpaceColumn" prefWidth="120.0" text="Espaço Usado" />
+                        <TableColumn fx:id="freeSpaceColumn" prefWidth="120.0" text="Espaço Livre" />
+                        <TableColumn fx:id="usageColumn" prefWidth="150.0" text="Uso (%)" />
+                    </columns>
+                </TableView>
+            </content>
+        </TitledPane>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.3" BorderPane.alignment="CENTER" >
+            <items>
+                <TreeView fx:id="directoryTreeView" />
+                <TableView fx:id="fileDetailsTableView">
+                    <columns>
+                        <TableColumn fx:id="nameColumn" prefWidth="180.0" text="Nome" />
+                        <TableColumn fx:id="sizeColumn" prefWidth="100.0" text="Tamanho" />
+                        <TableColumn fx:id="dateModifiedColumn" prefWidth="150.0" text="Data de Modificação" />
+                        <TableColumn fx:id="permissionColumn" prefWidth="100.0" text="Permissões" />
+                    </columns>
+                </TableView>
+            </items>
+        </SplitPane>
+    </center>
+</BorderPane>

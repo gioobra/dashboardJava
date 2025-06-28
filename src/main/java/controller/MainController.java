@@ -39,6 +39,7 @@ public class MainController {
     @FXML private ListView<String> CPUinfo;
     @FXML private TableView<Map<String, Object>> tabelaProcessos;
     @FXML private Button detalhes;
+    @FXML private Button discos;
     @FXML private LineChart<Number, Number> graficoCPU;
     @FXML private PieChart graficoRAM;
     @FXML private TableColumn<Map<String, Object>, String> colunaNome;
@@ -322,6 +323,30 @@ public class MainController {
             alert.setTitle("Erro ao Abrir Detalhes");
             alert.setHeaderText(null);
             alert.setContentText("Não foi possível carregar a janela de detalhes avançados.\nVerifique o console para mais informações.");
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    private void handleDiscosButtonAction() {
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/DiscosView.fxml"));
+            Parent root = loader.load();
+
+            Stage discosStage = new Stage();
+            discosStage.setTitle("Informações sobre os discos");
+            Scene discosScene = new Scene(root, 1160, 600);
+            String cssPath = getClass().getResource("/view/styles.css").toExternalForm();
+            discosScene.getStylesheets().add(cssPath);
+            discosStage.setScene(discosScene);
+
+            discosStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erro ao Abrir Discos");
+            alert.setHeaderText(null);
+            alert.setContentText("Não foi possível carregar a janela de discos. \nVerifique o console para mais informações");
             alert.showAndWait();
         }
     }
