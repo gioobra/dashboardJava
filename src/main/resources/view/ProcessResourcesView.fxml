@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProcessResourcesController">
+    <top>
+        <Label fx:id="titleLabel" text="Recursos Abertos para o Processo: " BorderPane.alignment="CENTER_LEFT">
+            <font>
+                <Font name="System Bold" size="16.0" />
+            </font>
+            <BorderPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </BorderPane.margin>
+        </Label>
+    </top>
+    <center>
+        <TableView fx:id="resourcesTableView" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="descriptorColumn" prefWidth="100.0" text="Descritor (FD)" />
+                <TableColumn fx:id="typeColumn" prefWidth="150.0" text="Tipo" />
+                <TableColumn fx:id="detailsColumn" prefWidth="350.0" text="Detalhes (Arquivo, Socket, etc.)" />
+            </columns>
+            <placeholder>
+                <Label text="Nenhum recurso aberto encontrado para este processo." />
+            </placeholder>
+        </TableView>
+    </center>
+</BorderPane>

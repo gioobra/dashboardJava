@@ -7,6 +7,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -14,7 +17,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 
+import javafx.stage.Stage;
 import model.Processes;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +77,25 @@ public class DetailsController {
     /* Configura como vai ser pego o dado em cada coluna da tabela, cada objeto Map<String,
     Object>(que representa uma linha) para popular as células da coluna correspondente */
     private void setupColunasTabelaDetalhes() {
-        colPid.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("pid") != null ? ((Number)cd.getValue().get("pid")).longValue() : 0L));
+        colPid.setCellFactory(column -> new TableCell<Map<String, Object>, Number>() {
+                    @Override
+                    protected void updateItem(Number item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                            setOnMouseClicked(null);
+                        } else {
+                            setText(item.toString());
+                            // Adiciona o evento de duplo-clique
+                            setOnMouseClicked(event -> {
+                                if (event.getClickCount() == 2 && !isEmpty()) {
+                                    int pid = getItem().intValue();
+                                    openResourcesWindow(pid);
+                                }
+                            });
+                        }
+                    }
+                });
         colPpid.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("ppid") != null ? ((Number)cd.getValue().get("ppid")).longValue() : 0L));
         colNome.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("name")));
         colUser.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("user")));
@@ -167,5 +191,35 @@ public class DetailsController {
         });
         // Inicia a thread para nao bloquear a UI
         new Thread(taskCarregarDados).start();
+    }
+    private void openResourcesWindow(int pid) {
+        try {
+            // Carrega o FXML da nova janela
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ProcessResourcesView.fxml"));
+            Parent root = loader.load();
+
+            // **PASSO CRÍTICO**: Obtém a instância do novo controller
+            ProcessResourcesController resourcesController = loader.getController();
+            // **PASSO CRÍTICO**: Chama o método initData para passar o PID
+            resourcesController.initData(pid);
+
+            // Configura e exibe a nova janela (Stage)
+            Stage stage = new Stage();
+            stage.setTitle("Recursos do Processo " + pid);
+            Scene scene = new Scene(root);
+
+            // Opcional: Aplica o mesmo estilo da janela de detalhes
+            String cssPath = getClass().getResource("/view/styles.css").toExternalForm();
+            if (cssPath != null) {
+                scene.getStylesheets().add(cssPath);
+            }
+
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Aqui você pode mostrar um Alert para o usuário, se desejar
+        }
     }
 }
