@@ -20,23 +20,16 @@ public class ProcessResourcesController {
     @FXML private TableColumn<ResourceInfo, String> typeColumn;
     @FXML private TableColumn<ResourceInfo, String> detailsColumn;
 
-    /**
-     * Usamos um record para uma representação de dados forte e segura para a tabela.
-     */
+    //Usamos um record para uma representação de dados para a tabela.
     private record ResourceInfo(String descriptor, String type, String details) {}
 
-    /**
-     * Este método é chamado pelo DetailsController para passar o PID e iniciar o carregamento dos dados.
-     * @param pid O ID do processo a ser monitorado.
-     */
+    //Este method é chamado pelo DetailsController para passar o PID e iniciar o carregamento dos dados.
     public void initData(int pid) {
         titleLabel.setText("Recursos Abertos para o Processo: " + pid);
         loadResources(pid);
     }
 
-    /**
-     * Configura as colunas da tabela e inicia a tarefa de carregamento dos recursos.
-     */
+    //Configura as colunas da tabela e inicia a tarefa de carregamento dos recursos.
     private void loadResources(int pid) {
         // Mapeia as colunas para as propriedades do record ResourceInfo
         descriptorColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().descriptor()));

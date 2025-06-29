@@ -26,14 +26,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-/**
- * Controller para a view de monitoramento de sistema de arquivos.
- * Versão Final: Segue o padrão javafx.concurrent.Task para consistência
- * com outros controllers do projeto (ex: DetailsController).
- */
+
 public class DiscosController implements Initializable {
 
-    //<editor-fold desc="FXML Fields">
+
     @FXML private TableView<PartitionInfo> diskTableView;
     @FXML private TableColumn<PartitionInfo, String> partitionColumn;
     @FXML private TableColumn<PartitionInfo, String> totalSpaceColumn;
@@ -48,14 +44,12 @@ public class DiscosController implements Initializable {
     @FXML private TableColumn<Path, String> sizeColumn;
     @FXML private TableColumn<Path, String> dateModifiedColumn;
     @FXML private TableColumn<Path, String> permissionColumn;
-    //</editor-fold>
+
 
     private final FileSystemMonitor monitor = new FileSystemMonitor();
     private ProgressIndicator loadingIndicator;
 
-    /**
-     * Record para representar os dados da tabela de discos de forma imutável e segura.
-     */
+    //Record para representar os dados da tabela de discos
     private record PartitionInfo(String mountPoint, String totalSize, String usedSize, String freeSize, Double usage) {}
 
     @Override
@@ -68,11 +62,9 @@ public class DiscosController implements Initializable {
         loadDiskInfoData();
     }
 
-    /**
-     * Cria e posiciona o indicador de progresso sobre a área principal da TreeView.
-     */
+    //Cria e posiciona o indicador de progresso sobre a área principal da TreeView
     private void setupLoadingIndicator() {
-        loadingIndicator = new ProgressIndicator(-1.0); // Indicador indeterminado
+        loadingIndicator = new ProgressIndicator(-1.0);
         loadingIndicator.setMaxSize(100, 100);
         loadingIndicator.setVisible(false);
         loadingIndicator.setMouseTransparent(true); // Permite cliques através do indicador
@@ -84,7 +76,6 @@ public class DiscosController implements Initializable {
             SplitPane splitPane = (SplitPane) directoryTreeView.getParent();
             int treeViewIndex = splitPane.getItems().indexOf(directoryTreeView);
 
-            // A ordem é importante: primeiro a TreeView, depois o indicador por cima
             treeViewContainer.getChildren().addAll(directoryTreeView, loadingIndicator);
 
             // Substitui a TreeView original pelo nosso novo container
@@ -94,7 +85,7 @@ public class DiscosController implements Initializable {
         }
     }
 
-    // --- SEÇÃO DE CONFIGURAÇÃO DAS COLUNAS ---
+
 
     private void setupDiskInfoTableColumns() {
         partitionColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().mountPoint()));
@@ -119,11 +110,9 @@ public class DiscosController implements Initializable {
         permissionColumn.setCellValueFactory(cd -> new SimpleStringProperty(formatFilePermissions(cd.getValue())));
     }
 
-    // --- SEÇÃO DE CARREGAMENTO ASSÍNCRONO COM `Task` ---
 
-    /**
-     * Carrega os dados dos discos usando uma Task para não bloquear a UI.
-     */
+
+    //Carrega os dados dos discos usando uma Task para não bloquear a UI.
     private void loadDiskInfoData() {
         Task<List<PartitionInfo>> loadDisksTask = new Task<>() {
             @Override
@@ -156,9 +145,7 @@ public class DiscosController implements Initializable {
         new Thread(loadDisksTask).start();
     }
 
-    /**
-     * Atualiza a tabela de detalhes de arquivos usando uma Task.
-     */
+    //Atualiza a tabela de detalhes de arquivos usando uma Task
     private void updateFileDetailsTable(Path directoryPath) {
         loadingIndicator.setVisible(true);
         fileDetailsTableView.setDisable(true);
@@ -194,8 +181,7 @@ public class DiscosController implements Initializable {
         new Thread(loadFilesTask).start();
     }
 
-    // --- SEÇÃO DE LÓGICA DA ÁRVORE (TreeView) ---
-
+    //serve para conectar a TreeView com a tabela de detalhes da direita
     private void linkTreeToDetailsTable() {
         directoryTreeView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null && newVal.getValue() != null) {
@@ -204,6 +190,7 @@ public class DiscosController implements Initializable {
         });
     }
 
+    //Method que garante a execução rápida do programa, um diretório so carrega a lista de subpastas no momento que for selecionado
     private TreeItem<Path> createLazyLoadingTreeItem(Path path) {
         TreeItem<Path> item = new TreeItem<>(path);
         // Adiciona um filho "fantasma" para que o nó seja expansível na UI
@@ -220,6 +207,7 @@ public class DiscosController implements Initializable {
         return item;
     }
 
+    //Method para inserir os "filhos" de um processo
     private void loadTreeItemChildren(TreeItem<Path> parentItem) {
         parentItem.getChildren().setAll(new TreeItem<>(Paths.get("Carregando...")));
 
@@ -249,7 +237,7 @@ public class DiscosController implements Initializable {
         new Thread(loadChildrenTask).start();
     }
 
-    //<editor-fold desc="Formatting Helper Methods">
+   //Methods para organizar o tamanho, a data e as permissões
     private String formatFileSize(Path path) {
         try {
             if (Files.isDirectory(path)) return "<DIR>";
@@ -269,5 +257,5 @@ public class DiscosController implements Initializable {
     private String formatFilePermissions(Path path) {
         return (Files.isDirectory(path) ? "d" : "-") + (Files.isReadable(path) ? "r" : "-") + (Files.isWritable(path) ? "w" : "-") + (Files.isExecutable(path) ? "x" : "-");
     }
-    //</editor-fold>
+
 }
