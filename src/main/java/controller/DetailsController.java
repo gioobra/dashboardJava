@@ -77,25 +77,26 @@ public class DetailsController {
     /* Configura como vai ser pego o dado em cada coluna da tabela, cada objeto Map<String,
     Object>(que representa uma linha) para popular as células da coluna correspondente */
     private void setupColunasTabelaDetalhes() {
+        colPid.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("pid") != null ? ((Number)cd.getValue().get("pid")).longValue() : 0L));
         colPid.setCellFactory(column -> new TableCell<Map<String, Object>, Number>() {
-                    @Override
-                    protected void updateItem(Number item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty || item == null) {
-                            setText(null);
-                            setOnMouseClicked(null);
-                        } else {
-                            setText(item.toString());
-                            // Adiciona o evento de duplo-clique
-                            setOnMouseClicked(event -> {
-                                if (event.getClickCount() == 2 && !isEmpty()) {
-                                    int pid = getItem().intValue();
-                                    openResourcesWindow(pid);
-                                }
-                            });
+            @Override
+            protected void updateItem(Number item, boolean empty) {
+                super.updateItem(item, empty);
+                if(empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                    setOnMouseClicked(null);
+                } else{
+                    setText(item.toString());
+                    setOnMouseClicked(event -> {
+                        if(event.getClickCount() == 2 && !isEmpty()){
+                            int pid = getItem().intValue();
+                            openResourcesWindow(pid);
                         }
-                    }
-                });
+                    });
+                }
+            }
+        });
         colPpid.setCellValueFactory(cd -> new SimpleLongProperty(cd.getValue().get("ppid") != null ? ((Number)cd.getValue().get("ppid")).longValue() : 0L));
         colNome.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("name")));
         colUser.setCellValueFactory(cd -> new SimpleStringProperty((String) cd.getValue().get("user")));
