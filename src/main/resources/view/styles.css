@@ -15,6 +15,8 @@
 .root{
     -fx-background-color: #1e1e2f;
     -fx-font-family: "DejaVu Sans", Arial, sans-serif;
+    -fx-focus-color : #007bff;
+    -fx-faint-focus-color: #007bff22;
 }
 
 .label{
@@ -92,6 +94,17 @@
 .table-view .table-row-cell:selected .table-cell {
     -fx-text-fill: white;
 }
+.table-view .table-row-cell:hover{
+    -fx-background-color: #3a3a4a;
+}
+
+.table-view .table-row-cell:selected:hover{
+    -fx-background-color: #007bff;
+}
+.table-view .placeholder .label{
+    -fx-text-fill: #808090;
+    -fx-font-style: italic;
+}
 .table-view .scroll-bar:horizontal .track,
 .table-view .scroll-bar:vertical .track {
     -fx-background-color: #2a2a3a;
@@ -164,4 +177,28 @@
 .chart-pie-label {
     -fx-fill: #c0c0d0;
     -fx-font-size: 0.9em;
+}
+
+.tree-view{
+    -fx-background-color: #2a2a3a;
+    -fx-border-color: #404050;
+}
+
+.tree-cell{
+    -fx-background-color: transparent;
+    -fx-text-fill: #c0c0d0;
+    -fx-padding: 5px;
+}
+
+.tree-cell:filled:hover{
+    -fx-background-color: #3a3a4a;
+}
+
+.tree-cell:filled:selected, .tree-cell:filled:selected:focused{
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+}
+
+.tree-cell .tree-disclosure-node .arrow{
+    -fx-background-color: #c0c0d0;
 }
